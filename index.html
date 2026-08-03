@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Khoa Hoa Kỳ - CÂN LÚA PRO v2.0</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rice: {
+                            50: '#fdfbf7',
+                            100: '#f7f2e7',
+                            500: '#d97706',
+                            600: '#b45309',
+                            700: '#92400e',
+                        },
+                        field: {
+                            500: '#15803d',
+                            600: '#166534',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Touch optimization & Disable text zoom/selection for native app feel */
+        body {
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .active-cell {
+            box-shadow: 0 0 0 3px #2563eb, inset 0 0 0 2px #ffffff;
+            animation: pulse-border 1.5s infinite;
+        }
+        @keyframes pulse-border {
+            0%, 100% { border-color: #2563eb; }
+            50% { border-color: #60a5fa; }
+        }
+        /* Custom scrollbar for grid if screen is very small */
+        .custom-scroll::-webkit-scrollbar {
+            height: 4px;
+            width: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 h-screen flex flex-col justify-between overflow-hidden">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-amber-600 text-white shadow-md flex-none z-10">
+        <div class="max-w-md mx-auto px-3 py-2 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid font-bold fa-wheat-awn text-xl text-yellow-300"></i>
+                <div>
+                    <h1 class="font-bold text-base leading-tight">Khoa Hoa Kỳ - CÂN LÚA PRO v2.0</h1>
+                    <p class="text-[10px] text-amber-100 uppercase tracking-wider font-semibold">Sổ Cân Lúa Ngoài Đồng</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleAudio()" id="audioBtn" class="bg-amber-700/80 hover:bg-amber-800 text-yellow-300 p-2 rounded-lg text-sm flex items-center gap-1 border border-amber-500">
+                    <i class="fa-solid fa-volume-high" id="audioIcon"></i>
+                    <span class="text-xs font-bold hidden sm:inline">Âm thanh</span>
+                </button>
+                <button onclick="openHistoryModal()" class="bg-amber-700/80 hover:bg-amber-800 text-white p-2 rounded-lg text-sm flex items-center gap-1 border border-amber-500">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span class="text-xs font-bold hidden sm:inline">Lịch sử</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Main Container -->
+    <main class="flex-1 max-w-md w-full mx-auto flex flex-col justify-between overflow-hidden p-2 gap-2">
+
+        <!-- 1. Header Information Bar -->
+        <section class="bg-white rounded-xl p-2.5 shadow-sm border border-slate-200 flex-none">
+            <div class="flex justify-between items-start border-b border-slate-100 pb-1.5 mb-1.5">
+                <div class="flex-1">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs text-slate-500 font-medium">Chủ ruộng:</span>
+                        <input type="text" id="farmerName" value="Anh Ba Cường" onchange="updateBatchInfo()" class="font-bold text-sm text-slate-800 border-b border-dashed border-slate-300 focus:outline-none focus:border-amber-500 bg-transparent w-32">
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-600 mt-0.5">
+                        <span>Lúa: <input type="text" id="riceType" value="ST25" onchange="updateBatchInfo()" class="font-semibold text-amber-700 w-16 border-b border-dashed border-slate-300 focus:outline-none bg-transparent"></span>
+                        <span>•</span>
+                        <span>Giá: <input type="number" id="ricePrice" value="8500" onchange="updateBatchInfo()" class="font-semibold text-emerald-700 w-16 border-b border-dashed border-slate-300 focus:outline-none bg-transparent"> đ/kg</span>
+                    </div>
+                </div>
+                <button onclick="openSettingsModal()" class="text-slate-400 hover:text-amber-600 p-1">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-1 text-center text-xs">
+                <div class="bg-slate-50 p-1 rounded border border-slate-100">
+                    <span class="text-slate-400 block text-[10px]">Trừ Bì/Bao</span>
+                    <span class="font-bold text-slate-700" id="tareDisplay">0.10 kg</span>
+                </div>
+                <div class="bg-slate-50 p-1 rounded border border-slate-100">
+                    <span class="text-slate-400 block text-[10px]">Tẩy/Hao Hụt</span>
+                    <span class="font-bold text-slate-700" id="deductDisplay">0.0 %</span>
+                </div>
+                <div class="bg-amber-50 p-1 rounded border border-amber-200">
+                    <span class="text-amber-600 block text-[10px] font-medium">Cơ Chế Nhập</span>
+                    <span class="font-bold text-amber-800" id="autoDecimalDisplay">502 ➔ 50.2</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Grid 5 Columns x 5 Rows (Top to Bottom flow per column) -->
+        <section class="bg-white rounded-xl p-2 shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0 justify-between">
+            
+            <div class="flex justify-between items-center mb-1 px-1">
+                <span class="text-xs font-bold text-slate-600 flex items-center gap-1">
+                    <i class="fa-solid fa-table-cells text-amber-500"></i> BẢNG MÃ CÂN (5 MÃ X 5 BAO)
+                </span>
+                <span class="text-[11px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                    Chế độ: Từ Trên Xuống
+                </span>
+            </div>
+
+            <!-- 5x5 Grid Table -->
+            <div class="flex-1 custom-scroll overflow-y-auto min-h-0">
+                <div class="grid grid-cols-5 gap-1.5 h-full min-h-[220px]">
+                    <!-- Columns 1 to 5 generated by JS -->
+                    <template id="col-template">
+                        <div class="flex flex-col h-full justify-between bg-slate-50/50 p-1 rounded-lg border border-slate-200/80">
+                            <div class="text-center font-bold text-[11px] text-slate-500 border-b border-slate-200 pb-0.5 mb-1 col-header">
+                                MÃ 1
+                            </div>
+                            <div class="flex-1 flex flex-col justify-between gap-1 col-cells">
+                                <!-- 5 Cells go here -->
+                            </div>
+                            <div class="mt-1 pt-1 border-t border-slate-200 text-center bg-amber-100/60 rounded py-0.5">
+                                <span class="text-[9px] text-slate-500 uppercase block font-semibold">T.Mã</span>
+                                <span class="font-bold text-xs text-amber-800 col-total">0.0</span>
+                            </div>
+                        </div>
+                    </template>
+                    <div id="gridContainer" class="col-span-5 grid grid-cols-5 gap-1 h-full"></div>
+                </div>
+            </div>
+
+            <!-- Summary Strip below grid -->
+            <div class="mt-1.5 bg-slate-800 text-white p-2 rounded-lg flex justify-between items-center shadow-inner">
+                <div>
+                    <span class="text-[10px] text-slate-400 block font-medium">ĐÃ CÂN HỆN TẠI</span>
+                    <div class="text-sm font-bold text-amber-400">
+                        <span id="totalBags">0</span> bao <span class="text-slate-400 font-normal text-xs">(<span id="totalCodes">0.0</span> mã)</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-slate-400 block font-medium">TỔNG KHỐI LƯỢNG LÚA</span>
+                    <div class="text-base font-extrabold text-emerald-400">
+                        <span id="grossWeight">0.0</span> <span class="text-xs font-normal text-slate-300">kg</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Keypad & Quick Controls Section -->
+        <section class="bg-white rounded-xl p-2 shadow-sm border border-slate-200 flex-none gap-1.5 flex flex-col">
+            
+            <!-- Direct Value Display Input / Quick Add Strip -->
+            <div class="flex items-center gap-1.5">
+                <!-- Current Typing Display -->
+                <div class="flex-1 bg-slate-100 rounded-lg px-3 py-1.5 border border-slate-300 flex justify-between items-center">
+                    <span class="text-xs text-slate-400 font-medium">Bao <span id="currentBaoLabel" class="text-slate-700 font-bold">#1</span>:</span>
+                    <span id="keypadDisplay" class="text-xl font-black text-blue-700 tracking-wider">0</span>
+                </div>
+                
+                <!-- Quick add buttons (+0.2, +0.5, +0.8) -->
+                <div class="flex gap-1">
+                    <button onclick="quickAddFraction('0.2')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95">
+                        +0.2
+                    </button>
+                    <button onclick="quickAddFraction('0.5')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95">
+                        +0.5
+                    </button>
+                    <button onclick="quickAddFraction('0.8')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95">
+                        +0.8
+                    </button>
+                </div>
+            </div>
+
+            <!-- Keypad Layout Grid -->
+            <div class="grid grid-cols-12 gap-1.5">
+                
+                <!-- Numpad 4x3 (Left side) -->
+                <div class="col-span-7 grid grid-cols-3 gap-1">
+                    <button onclick="pressNum('7')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">7</button>
+                    <button onclick="pressNum('8')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">8</button>
+                    <button onclick="pressNum('9')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">9</button>
+                    
+                    <button onclick="pressNum('4')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">4</button>
+                    <button onclick="pressNum('5')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">5</button>
+                    <button onclick="pressNum('6')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">6</button>
+                    
+                    <button onclick="pressNum('1')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">1</button>
+                    <button onclick="pressNum('2')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">2</button>
+                    <button onclick="pressNum('3')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">3</button>
+                    
+                    <button onclick="pressNum('0')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">0</button>
+                    <button onclick="pressNum('.')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">.</button>
+                    <button onclick="deleteDigit()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 text-base rounded-lg border border-rose-300 active:bg-rose-300 transition shadow-sm">
+                        <i class="fa-solid fa-backspace"></i>
+                    </button>
+                </div>
+
+                <!-- Action Buttons (Right side) -->
+                <div class="col-span-5 flex flex-col gap-1">
+                    <!-- ENTER BUTTON -->
+                    <button onclick="submitValue()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black text-lg rounded-lg border border-blue-800 shadow-md active:scale-95 transition flex items-center justify-center gap-1">
+                        <span>NHẬP</span>
+                        <i class="fa-solid fa-turn-down rotate-90 text-sm"></i>
+                    </button>
+                    
+                    <!-- CUT CODE EARLY / CUT COLUMN -->
+                    <button onclick="forceCutCode()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 text-xs rounded-lg border border-emerald-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-scissors"></i>
+                        <span>CẮT MÃ SỚM</span>
+                    </button>
+
+                    <!-- COMPLETE & CALCULATE RECEIPT -->
+                    <button onclick="openBillModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 text-xs rounded-lg border border-amber-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>TÍNH TIỀN</span>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals / Dialogs -->
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-xl flex flex-col gap-3">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-amber-600"></i> Cấu Hình Cân Lúa
+                </h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Trọng lượng Vỏ Bao (Bì)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="settingTare" step="0.01" value="0.10" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800">
+                        <span class="font-bold text-slate-500">kg/bao</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Tỷ lệ Tẩy / Trừ hao tạp chất</label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="settingDeduct" step="0.1" value="0.0" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800">
+                        <span class="font-bold text-slate-500">%</span>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                    <label class="flex items-center justify-between font-semibold text-slate-800 cursor-pointer">
+                        <span>Chế độ gõ nhanh (Số lẻ)</span>
+                        <input type="checkbox" id="settingAutoDecimal" checked class="w-4 h-4 text-amber-600 rounded">
+                    </label>
+                    <p class="text-[10px] text-slate-500 mt-1">Gõ 3 số liên tiếp ví dụ <b>502</b> sẽ tự hiểu là <b>50.2 kg</b> mà không cần gõ dấu chấm.</p>
+                </div>
+                
+                <div class="bg-blue-50 p-2.5 rounded-lg border border-blue-200">
+                    <label class="flex items-center justify-between font-semibold text-slate-800 cursor-pointer">
+                        <span>Đọc âm thanh số kg khi nhập</span>
+                        <input type="checkbox" id="settingVoice" checked class="w-4 h-4 text-blue-600 rounded">
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2 border-t">
+                <button onclick="resetCurrentGrid()" class="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2 rounded-lg text-xs">
+                    Xóa Làm Lại
+                </button>
+                <button onclick="saveSettings()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded-lg text-xs">
+                    Lưu Thay Đổi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill / Receipt Modal -->
+    <div id="billModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-md w-full p-4 shadow-xl flex flex-col max-h-[90vh] overflow-hidden">
+            <div class="flex justify-between items-center border-b pb-2 flex-none">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-receipt text-emerald-600"></i> Hóa Đơn Thu Mua Lúa
+                </h3>
+                <button onclick="closeBillModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Receipt content (Printable) -->
+            <div id="receiptContent" class="flex-1 overflow-y-auto p-3 bg-slate-50 my-2 rounded-xl border border-slate-200 text-xs space-y-2.5">
+                <div class="text-center border-b border-dashed border-slate-300 pb-2">
+                    <h2 class="font-black text-base text-slate-800">PHIẾU THU MUA LÚA</h2>
+                    <p class="text-[10px] text-slate-500" id="billDate">Ngày: --/--/----</p>
+                </div>
+
+                <div class="space-y-1 border-b border-dashed border-slate-300 pb-2">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Chủ ruộng:</span>
+                        <span class="font-bold text-slate-800" id="billFarmer">--</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Loại lúa:</span>
+                        <span class="font-bold text-slate-800" id="billRiceType">--</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Đơn giá:</span>
+                        <span class="font-bold text-emerald-700" id="billUnitPrice">0 đ/kg</span>
+                    </div>
+                </div>
+
+                <!-- Weight Calculation breakdown -->
+                <div class="space-y-1.5 border-b border-dashed border-slate-300 pb-2">
+                    <div class="flex justify-between">
+                        <span>Tổng số bao:</span>
+                        <span class="font-bold" id="billTotalBags">0 bao</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Tổng cân gộp:</span>
+                        <span class="font-bold" id="billGrossWeight">0.0 kg</span>
+                    </div>
+                    <div class="flex justify-between text-rose-600">
+                        <span>Trừ bì (<span id="billBagsForTare">0</span> bao x <span id="billTareRate">0.1</span>kg):</span>
+                        <span class="font-bold" id="billTotalTare">-0.0 kg</span>
+                    </div>
+                    <div class="flex justify-between text-rose-600">
+                        <span>Trừ hao tạp chất/tẩy (<span id="billDeductRate">0</span>%):</span>
+                        <span class="font-bold" id="billTotalDeduct">-0.0 kg</span>
+                    </div>
+                    <div class="flex justify-between text-sm font-black text-slate-900 bg-emerald-100/70 p-1.5 rounded">
+                        <span>THỰC THU MUA:</span>
+                        <span class="text-emerald-800" id="billNetWeight">0.0 kg</span>
+                    </div>
+                </div>
+
+                <!-- Deposit & Total Money -->
+                <div class="space-y-1.5 pt-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Tiền Đặt Cọc Trước:</span>
+                        <input type="number" id="billDeposit" value="0" oninput="calculateFinalMoney()" class="w-28 p-1 text-right border border-slate-300 rounded font-bold text-slate-800">
+                    </div>
+                    <div class="flex justify-between text-sm font-extrabold text-slate-900 pt-1">
+                        <span>TỔNG TIỀN LÚA:</span>
+                        <span class="text-blue-700 text-base" id="billTotalAmount">0 đ</span>
+                    </div>
+                    <div class="flex justify-between text-sm font-black text-amber-700 bg-amber-100 p-2 rounded-lg border border-amber-300">
+                        <span>CÒN THANH TOÁN:</span>
+                        <span class="text-base" id="billRemainingAmount">0 đ</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Action buttons -->
+            <div class="flex gap-2 flex-none pt-2 border-t">
+                <button onclick="shareOrPrint()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-print"></i>
+                    <span>In / Chia Sẻ</span>
+                </button>
+                <button onclick="saveBatchToHistory()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-xs flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Lưu Đợt Cân</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-md w-full p-4 shadow-xl flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center border-b pb-2 flex-none">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> Lịch Sử Thu Mua
+                </h3>
+                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div id="historyList" class="flex-1 overflow-y-auto my-2 space-y-2 pr-1">
+                <!-- History Items -->
+            </div>
+
+            <button onclick="clearAllHistory()" class="flex-none bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 font-bold py-2 rounded-lg text-xs transition">
+                Xóa Tất Cả Lịch Sử
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white px-4 py-2 rounded-full text-xs font-semibold shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-2">
+        <i class="fa-solid fa-circle-info text-amber-400"></i>
+        <span id="toastMsg">Thông báo</span>
+    </div>
+
+    <!-- Javascript Application Logic -->
+    <script>
+        // Data State
+        const ROWS_PER_COL = 5;
+        const TOTAL_COLS = 5;
+        const TOTAL_CELLS = ROWS_PER_COL * TOTAL_COLS; // 25 bags per batch block
+
+        // Array representing 25 cells in column-first order
+        // Index mapping:
+        // Col 0 (Mã 1): 0, 1, 2, 3, 4
+        // Col 1 (Mã 2): 5, 6, 7, 8, 9 ...
+        let gridData = new Array(TOTAL_CELLS).fill(null);
+        let currentIndex = 0; // Current active cell index
+
+        let config = {
+            tarePerBag: 0.10, // kg
+            deductRatio: 0.0, // %
+            autoDecimal: true,
+            voiceEnabled: true,
+            farmer: "Anh Ba Cường",
+            riceType: "ST25",
+            price: 8500
+        };
+
+        let currentInputStr = "";
+
+        // Audio synthesis for voice reader
+        let audioEnabled = true;
+
+        // Initialize App
+        window.onload = () => {
+            loadConfig();
+            buildGridUI();
+            selectCell(0);
+            updateSummary();
+        };
+
+        function loadConfig() {
+            const saved = localStorage.getItem('rice_app_config');
+            if (saved) {
+                config = { ...config, ...JSON.parse(saved) };
+            }
+            document.getElementById('farmerName').value = config.farmer;
+            document.getElementById('riceType').value = config.riceType;
+            document.getElementById('ricePrice').value = config.price;
+            document.getElementById('settingTare').value = config.tarePerBag;
+            document.getElementById('settingDeduct').value = config.deductRatio;
+            document.getElementById('settingAutoDecimal').checked = config.autoDecimal;
+            document.getElementById('settingVoice').checked = config.voiceEnabled;
+
+            updateConfigDisplays();
+        }
+
+        function updateConfigDisplays() {
+            document.getElementById('tareDisplay').innerText = `${parseFloat(config.tarePerBag).toFixed(2)} kg`;
+            document.getElementById('deductDisplay').innerText = `${parseFloat(config.deductRatio).toFixed(1)} %`;
+            document.getElementById('autoDecimalDisplay').innerText = config.autoDecimal ? "502 ➔ 50.2" : "Gõ chính xác";
+        }
+
+        // Build Grid HTML (5 columns x 5 rows)
+        function buildGridUI() {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = '';
+
+            for (let c = 0; c < TOTAL_COLS; c++) {
+                const colDiv = document.createElement('div');
+                colDiv.className = "flex flex-col h-full justify-between bg-slate-50/80 p-1 rounded-lg border border-slate-200";
+                
+                // Col Header
+                const header = document.createElement('div');
+                header.className = "text-center font-black text-[11px] text-slate-600 border-b border-slate-200 pb-0.5 mb-1";
+                header.innerText = `MÃ ${c + 1}`;
+                colDiv.appendChild(header);
+
+                // Col Cells container
+                const cellsDiv = document.createElement('div');
+                cellsDiv.className = "flex-1 flex flex-col justify-between gap-1";
+
+                for (let r = 0; r < ROWS_PER_COL; r++) {
+                    const index = c * ROWS_PER_COL + r;
+                    const baoNumber = index + 1;
+
+                    const cellBtn = document.createElement('button');
+                    cellBtn.id = `cell-${index}`;
+                    cellBtn.onclick = () => selectCell(index);
+                    cellBtn.className = "cell-item bg-white border border-slate-200 rounded py-1 px-0.5 flex flex-col items-center justify-center transition relative h-full min-h-[34px]";
+                    
+                    cellBtn.innerHTML = `
+                        <span class="text-[8px] text-slate-400 font-bold leading-none">Bao ${baoNumber}</span>
+                        <span class="text-xs font-black text-slate-800 leading-tight val-text">--.--</span>
+                    `;
+                    cellsDiv.appendChild(cellBtn);
+                }
+
+                colDiv.appendChild(cellsDiv);
+
+                // Col Total Footer
+                const footer = document.createElement('div');
+                footer.className = "mt-1 pt-1 border-t border-slate-200 text-center bg-amber-100/70 rounded py-0.5";
+                footer.innerHTML = `
+                    <span class="text-[8px] text-slate-500 font-bold block leading-none">T.MÃ ${c+1}</span>
+                    <span id="col-total-${c}" class="font-extrabold text-xs text-amber-900 leading-tight">0.0</span>
+                `;
+                colDiv.appendChild(footer);
+
+                container.appendChild(colDiv);
+            }
+        }
+
+        // Highlight Active Cell
+        function selectCell(index) {
+            if (index < 0 || index >= TOTAL_CELLS) return;
+
+            // Remove active style from old cell
+            const prevCell = document.getElementById(`cell-${currentIndex}`);
+            if (prevCell) {
+                prevCell.classList.remove('active-cell', 'bg-blue-50', 'border-blue-500');
+            }
+
+            currentIndex = index;
+            currentInputStr = "";
+            document.getElementById('keypadDisplay').innerText = "0";
+
+            const newCell = document.getElementById(`cell-${currentIndex}`);
+            if (newCell) {
+                newCell.classList.add('active-cell', 'bg-blue-50');
+            }
+
+            // Update bag indicator
+            document.getElementById('currentBaoLabel').innerText = `#${currentIndex + 1}`;
+        }
+
+        // Numpad Pressed
+        function pressNum(digit) {
+            if (digit === '.' && currentInputStr.includes('.')) return;
+            
+            if (currentInputStr === "0") {
+                currentInputStr = digit;
+            } else {
+                currentInputStr += digit;
+            }
+
+            updateKeypadDisplay();
+        }
+
+        function deleteDigit() {
+            currentInputStr = currentInputStr.slice(0, -1);
+            updateKeypadDisplay();
+        }
+
+        function updateKeypadDisplay() {
+            const display = document.getElementById('keypadDisplay');
+            if (!currentInputStr) {
+                display.innerText = "0";
+                return;
+            }
+
+            let formattedVal = currentInputStr;
+            // Auto decimal logic: if enabled and input has 3 digits without decimal (e.g., 502 -> 50.2)
+            if (config.autoDecimal && !currentInputStr.includes('.') && currentInputStr.length >= 3) {
+                formattedVal = (parseFloat(currentInputStr) / 10).toFixed(1);
+            }
+
+            display.innerText = formattedVal;
+        }
+
+        function quickAddFraction(fracStr) {
+            let baseVal = 50.0; // Default base if empty
+            if (gridData[currentIndex] !== null) {
+                baseVal = Math.floor(gridData[currentIndex]);
+            } else if (currentInputStr) {
+                baseVal = Math.floor(parseFloat(getParsedInputValue()));
+            }
+
+            const val = (baseVal + parseFloat(fracStr)).toFixed(1);
+            currentInputStr = val.toString();
+            updateKeypadDisplay();
+            submitValue();
+        }
+
+        function getParsedInputValue() {
+            if (!currentInputStr) return null;
+            if (config.autoDecimal && !currentInputStr.includes('.') && currentInputStr.length >= 3) {
+                return (parseFloat(currentInputStr) / 10).toFixed(1);
+            }
+            return parseFloat(currentInputStr).toFixed(1);
+        }
+
+        // Submit Value to Active Cell
+        function submitValue() {
+            let val = getParsedInputValue();
+            if (val === null) {
+                // If enter pressed on empty string, retain old value or move next
+                if (gridData[currentIndex] !== null) {
+                    moveToNextCell();
+                }
+                return;
+            }
+
+            val = parseFloat(val);
+
+            // Sanity check for rice bag weight (e.g. usually between 20kg and 100kg)
+            if (val > 120 || val < 10) {
+                showToast("⚠️ Số kg bất thường! Hãy kiểm tra lại.");
+            }
+
+            // Save data
+            gridData[currentIndex] = val;
+            updateCellUI(currentIndex);
+            updateSummary();
+
+            // Voice Speech Reader
+            if (config.voiceEnabled) {
+                speakNumber(val);
+            }
+
+            // Jump to next cell in top-to-bottom column order
+            moveToNextCell();
+        }
+
+        function updateCellUI(index) {
+            const cell = document.getElementById(`cell-${index}`);
+            if (!cell) return;
+            const valText = cell.querySelector('.val-text');
+            if (gridData[index] !== null) {
+                valText.innerText = gridData[index].toFixed(1);
+                valText.classList.remove('text-slate-800');
+                valText.classList.add('text-blue-700', 'font-black');
+            } else {
+                valText.innerText = "--.--";
+                valText.classList.remove('text-blue-700', 'font-black');
+                valText.classList.add('text-slate-800');
+            }
+        }
+
+        function moveToNextCell() {
+            currentInputStr = "";
+            document.getElementById('keypadDisplay').innerText = "0";
+
+            // Check if column just completed
+            const isEndOfColumn = (currentIndex + 1) % ROWS_PER_COL === 0;
+
+            if (isEndOfColumn && config.voiceEnabled) {
+                playBeepSound();
+            }
+
+            if (currentIndex < TOTAL_CELLS - 1) {
+                selectCell(currentIndex + 1);
+            } else {
+                showToast("🎉 Đã nhập đủ 25 bao (5 Mã)!");
+            }
+        }
+
+        // Force Cut Code (Jump to top of next column)
+        function forceCutCode() {
+            const currentColumn = Math.floor(currentIndex / ROWS_PER_COL);
+            if (currentColumn >= TOTAL_COLS - 1) {
+                showToast("Đã ở mã cân cuối cùng!");
+                return;
+            }
+
+            const nextColStartIndex = (currentColumn + 1) * ROWS_PER_COL;
+            selectCell(nextColStartIndex);
+            showToast(`Đã chốt sớm Mã ${currentColumn + 1} ➔ Chuyển sang Mã ${currentColumn + 2}`);
+            playBeepSound();
+        }
+
+        function updateSummary() {
+            let totalBags = 0;
+            let grossWeight = 0;
+
+            // Calculate col totals
+            for (let c = 0; c < TOTAL_COLS; c++) {
+                let colSum = 0;
+                for (let r = 0; r < ROWS_PER_COL; r++) {
+                    const idx = c * ROWS_PER_COL + r;
+                    if (gridData[idx] !== null) {
+                        colSum += gridData[idx];
+                        totalBags++;
+                    }
+                }
+                grossWeight += colSum;
+                document.getElementById(`col-total-${c}`).innerText = colSum.toFixed(1);
+            }
+
+            document.getElementById('totalBags').innerText = totalBags;
+            document.getElementById('totalCodes').innerText = (totalBags / 5).toFixed(1);
+            document.getElementById('grossWeight').innerText = grossWeight.toFixed(1);
+        }
+
+        function resetCurrentGrid() {
+            if (confirm("Bạn có chắc chắn muốn xóa tất cả dữ liệu cân hiện tại?")) {
+                gridData = new Array(TOTAL_CELLS).fill(null);
+                for (let i = 0; i < TOTAL_CELLS; i++) {
+                    updateCellUI(i);
+                }
+                selectCell(0);
+                updateSummary();
+                closeSettingsModal();
+                showToast("Đã xóa làm lại!");
+            }
+        }
+
+        // Bill / Receipt Calculations
+        function openBillModal() {
+            const totalBags = gridData.filter(v => v !== null).length;
+            if (totalBags === 0) {
+                showToast("Chưa có dữ liệu bao lúa nào!");
+                return;
+            }
+
+            const grossWeight = gridData.reduce((acc, v) => acc + (v || 0), 0);
+            const tareRate = parseFloat(config.tarePerBag);
+            const totalTare = totalBags * tareRate;
+
+            const deductRate = parseFloat(config.deductRatio);
+            const totalDeduct = ((grossWeight - totalTare) * (deductRate / 100));
+
+            const netWeight = Math.max(0, grossWeight - totalTare - totalDeduct);
+            const price = parseFloat(document.getElementById('ricePrice').value) || 0;
+            const totalAmount = netWeight * price;
+
+            // Fill elements
+            document.getElementById('billDate').innerText = `Ngày: ${new Date().toLocaleDateString('vi-VN')} ${new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}`;
+            document.getElementById('billFarmer').innerText = document.getElementById('farmerName').value;
+            document.getElementById('billRiceType').innerText = document.getElementById('riceType').value;
+            document.getElementById('billUnitPrice').innerText = `${price.toLocaleString('vi-VN')} đ/kg`;
+
+            document.getElementById('billTotalBags').innerText = `${totalBags} bao`;
+            document.getElementById('billGrossWeight').innerText = `${grossWeight.toFixed(1)} kg`;
+            document.getElementById('billBagsForTare').innerText = totalBags;
+            document.getElementById('billTareRate').innerText = tareRate.toFixed(2);
+            document.getElementById('billTotalTare').innerText = `-${totalTare.toFixed(1)} kg`;
+
+            document.getElementById('billDeductRate').innerText = deductRate.toFixed(1);
+            document.getElementById('billTotalDeduct').innerText = `-${totalDeduct.toFixed(1)} kg`;
+
+            document.getElementById('billNetWeight').innerText = `${netWeight.toFixed(1)} kg`;
+            document.getElementById('billTotalAmount').innerText = `${Math.round(totalAmount).toLocaleString('vi-VN')} đ`;
+
+            calculateFinalMoney();
+
+            document.getElementById('billModal').classList.remove('hidden');
+        }
+
+        function calculateFinalMoney() {
+            const grossWeight = gridData.reduce((acc, v) => acc + (v || 0), 0);
+            const totalBags = gridData.filter(v => v !== null).length;
+            const totalTare = totalBags * parseFloat(config.tarePerBag);
+            const totalDeduct = ((grossWeight - totalTare) * (parseFloat(config.deductRatio) / 100));
+            const netWeight = Math.max(0, grossWeight - totalTare - totalDeduct);
+            const price = parseFloat(document.getElementById('ricePrice').value) || 0;
+            const totalAmount = Math.round(netWeight * price);
+
+            const deposit = parseFloat(document.getElementById('billDeposit').value) || 0;
+            const remaining = totalAmount - deposit;
+
+            document.getElementById('billRemainingAmount').innerText = `${remaining.toLocaleString('vi-VN')} đ`;
+        }
+
+        function closeBillModal() {
+            document.getElementById('billModal').classList.add('hidden');
+        }
+
+        // History Management
+        function saveBatchToHistory() {
+            const farmer = document.getElementById('farmerName').value;
+            const riceType = document.getElementById('riceType').value;
+            const price = parseFloat(document.getElementById('ricePrice').value) || 0;
+            const totalBags = gridData.filter(v => v !== null).length;
+            const grossWeight = gridData.reduce((acc, v) => acc + (v || 0), 0);
+
+            const batchRecord = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('vi-VN') + " " + new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}),
+                farmer,
+                riceType,
+                price,
+                totalBags,
+                grossWeight,
+                gridData: [...gridData]
+            };
+
+            const history = JSON.parse(localStorage.getItem('rice_app_history') || '[]');
+            history.unshift(batchRecord);
+            localStorage.setItem('rice_app_history', JSON.stringify(history));
+
+            showToast("💾 Đã lưu đợt cân vào lịch sử!");
+            closeBillModal();
+        }
+
+        function openHistoryModal() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+
+            const history = JSON.parse(localStorage.getItem('rice_app_history') || '[]');
+
+            if (history.length === 0) {
+                historyList.innerHTML = `<p class="text-center text-slate-400 py-6 text-xs">Chưa có đợt cân nào được lưu.</p>`;
+            } else {
+                history.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = "bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-xs space-y-1 shadow-sm";
+                    card.innerHTML = `
+                        <div class="flex justify-between font-bold text-slate-800">
+                            <span>${item.farmer} (${item.riceType})</span>
+                            <span class="text-amber-700">${item.price.toLocaleString('vi-VN')} đ/kg</span>
+                        </div>
+                        <div class="flex justify-between text-slate-500 text-[11px]">
+                            <span>${item.date}</span>
+                            <span class="font-bold text-emerald-700">${item.totalBags} bao = ${item.grossWeight.toFixed(1)} kg</span>
+                        </div>
+                    `;
+                    historyList.appendChild(card);
+                });
+            }
+
+            document.getElementById('historyModal').classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.add('hidden');
+        }
+
+        function clearAllHistory() {
+            if (confirm("Xóa toàn bộ lịch sử đã lưu?")) {
+                localStorage.removeItem('rice_app_history');
+                openHistoryModal();
+                showToast("Đã xóa lịch sử!");
+            }
+        }
+
+        // Settings Modal Handlers
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            config.tarePerBag = parseFloat(document.getElementById('settingTare').value) || 0;
+            config.deductRatio = parseFloat(document.getElementById('settingDeduct').value) || 0;
+            config.autoDecimal = document.getElementById('settingAutoDecimal').checked;
+            config.voiceEnabled = document.getElementById('settingVoice').checked;
+
+            config.farmer = document.getElementById('farmerName').value;
+            config.riceType = document.getElementById('riceType').value;
+            config.price = parseFloat(document.getElementById('ricePrice').value) || 0;
+
+            localStorage.setItem('rice_app_config', JSON.stringify(config));
+            updateConfigDisplays();
+            updateSummary();
+            closeSettingsModal();
+            showToast("Đã lưu cấu hình!");
+        }
+
+        function updateBatchInfo() {
+            config.farmer = document.getElementById('farmerName').value;
+            config.riceType = document.getElementById('riceType').value;
+            config.price = parseFloat(document.getElementById('ricePrice').value) || 0;
+            localStorage.setItem('rice_app_config', JSON.stringify(config));
+        }
+
+        // Audio & Speech Utilities
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            config.voiceEnabled = audioEnabled;
+            document.getElementById('audioIcon').className = audioEnabled ? "fa-solid fa-volume-high" : "fa-solid fa-volume-xmark";
+            showToast(audioEnabled ? "Đã BẬT âm thanh đọc số" : "Đã TẮT âm thanh");
+        }
+
+        function speakNumber(num) {
+            if (!('speechSynthesis' in window) || !audioEnabled) return;
+            window.speechSynthesis.cancel(); // Stop current speech
+            
+            // Format spoken string e.g. 50.2 -> "Năm mươi phẩy hai"
+            const numStr = num.toFixed(1).toString().replace('.', ' phẩy ');
+            const utterance = new SpeechSynthesisUtterance(numStr);
+            utterance.lang = 'vi-VN';
+            utterance.rate = 1.1; // Slightly fast
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function playBeepSound() {
+            if (!audioEnabled) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = "sine";
+                osc.frequency.value = 880; // A5 note
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.15);
+            } catch (e) {
+                // Ignore audio context autoplay restrictions
+            }
+        }
+
+        // Share or Print function
+        function shareOrPrint() {
+            window.print();
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
+
