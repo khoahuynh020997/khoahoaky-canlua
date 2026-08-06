@@ -82,15 +82,15 @@
     </header>
 
     <!-- App Main Container -->
-    <main class="flex-1 max-w-md w-full mx-auto flex flex-col justify-between overflow-hidden p-2 gap-2">
+    <main class="flex-1 max-w-md w-full mx-auto flex flex-col justify-between overflow-hidden p-2 gap-1.5">
 
         <!-- 1. Header Information Bar -->
-        <section class="bg-white rounded-xl p-2.5 shadow-sm border border-slate-200 flex-none">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-1.5 mb-1.5">
+        <section class="bg-white rounded-xl p-2 shadow-sm border border-slate-200 flex-none">
+            <div class="flex justify-between items-start border-b border-slate-100 pb-1 mb-1">
                 <div class="flex-1">
                     <div class="flex items-center gap-1.5">
                         <span class="text-xs text-slate-500 font-medium">Chủ ruộng:</span>
-                        <input type="text" id="farmerName" value="Anh Ba Cường" onchange="updateBatchInfo()" class="font-bold text-sm text-slate-800 border-b border-dashed border-slate-300 focus:outline-none focus:border-amber-500 bg-transparent w-32">
+                        <input type="text" id="farmerName" value="Anh Ba Cường" onchange="updateBatchInfo()" class="font-bold text-sm text-slate-800 border-b border-dashed border-slate-300 focus:outline-none focus:border-amber-500 bg-transparent w-36">
                     </div>
                     <div class="flex items-center gap-2 text-xs text-slate-600 mt-0.5">
                         <span>Lúa: <input type="text" id="riceType" value="ST25" onchange="updateBatchInfo()" class="font-semibold text-amber-700 w-16 border-b border-dashed border-slate-300 focus:outline-none bg-transparent"></span>
@@ -144,13 +144,13 @@
 
             <!-- 5x5 Grid Table -->
             <div class="flex-1 custom-scroll overflow-y-auto min-h-0">
-                <div class="grid grid-cols-5 gap-1.5 h-full min-h-[220px]">
+                <div class="grid grid-cols-5 gap-1 h-full min-h-[210px]">
                     <div id="gridContainer" class="col-span-5 grid grid-cols-5 gap-1 h-full"></div>
                 </div>
             </div>
 
             <!-- Summary Strip below grid -->
-            <div class="mt-1.5 bg-slate-800 text-white p-2 rounded-lg flex justify-between items-center shadow-inner">
+            <div class="mt-1 bg-slate-800 text-white p-2 rounded-lg flex justify-between items-center shadow-inner">
                 <div>
                     <span class="text-[10px] text-slate-400 block font-medium">TỔNG ĐÃ CÂN</span>
                     <div class="text-sm font-bold text-amber-400">
@@ -167,50 +167,60 @@
         </section>
 
         <!-- 3. Keypad & Quick Controls Section -->
-        <section class="bg-white rounded-xl p-2 shadow-sm border border-slate-200 flex-none gap-1.5 flex flex-col">
+        <section class="bg-white rounded-xl p-2 shadow-sm border border-slate-200 flex-none gap-1 flex flex-col">
             
             <!-- Direct Value Display Input / Quick Add Strip -->
-            <div class="flex items-center gap-1.5">
-                <!-- Current Typing Display -->
-                <div class="flex-1 bg-slate-100 rounded-lg px-3 py-1.5 border border-slate-300 flex justify-between items-center">
+            <div class="flex items-center gap-1">
+                <!-- Navigation Arrows & Current Typing Display -->
+                <button onclick="navigateCell(-1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95 border border-slate-300" title="Ô trước">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                
+                <div class="flex-1 bg-slate-100 rounded-lg px-2 py-1 border border-slate-300 flex justify-between items-center">
                     <span class="text-xs text-slate-400 font-medium">Bao <span id="currentBaoLabel" class="text-slate-700 font-bold">#1</span>:</span>
                     <span id="keypadDisplay" class="text-xl font-black text-blue-700 tracking-wider">0</span>
                 </div>
+
+                <button onclick="navigateCell(1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95 border border-slate-300" title="Ô sau">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Quick Base Weight Preset & Fraction Adders -->
+            <div class="grid grid-cols-8 gap-1">
+                <!-- Base Kg Presets -->
+                <button onclick="setBaseKg('50')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">50</button>
+                <button onclick="setBaseKg('51')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">51</button>
+                <button onclick="setBaseKg('52')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">52</button>
+                <button onclick="setBaseKg('53')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">53</button>
+                <button onclick="setBaseKg('54')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">54</button>
                 
-                <!-- Quick add buttons (+0.2, +0.5, +0.8) -->
-                <div class="flex gap-1">
-                    <button onclick="quickAddFraction('0.2')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95">
-                        +0.2
-                    </button>
-                    <button onclick="quickAddFraction('0.5')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95">
-                        +0.5
-                    </button>
-                    <button onclick="quickAddFraction('0.8')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95">
-                        +0.8
-                    </button>
-                </div>
+                <!-- Quick Fraction Adders -->
+                <button onclick="quickAddFraction('0.2')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold py-1 rounded text-xs transition active:scale-95">+0.2</button>
+                <button onclick="quickAddFraction('0.5')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold py-1 rounded text-xs transition active:scale-95">+0.5</button>
+                <button onclick="quickAddFraction('0.8')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold py-1 rounded text-xs transition active:scale-95">+0.8</button>
             </div>
 
             <!-- Keypad Layout Grid -->
-            <div class="grid grid-cols-12 gap-1.5">
+            <div class="grid grid-cols-12 gap-1.5 mt-0.5">
                 
                 <!-- Numpad 4x3 (Left side) -->
                 <div class="col-span-7 grid grid-cols-3 gap-1">
-                    <button onclick="pressNum('7')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">7</button>
-                    <button onclick="pressNum('8')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">8</button>
-                    <button onclick="pressNum('9')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">9</button>
+                    <button onclick="pressNum('7')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">7</button>
+                    <button onclick="pressNum('8')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">8</button>
+                    <button onclick="pressNum('9')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">9</button>
                     
-                    <button onclick="pressNum('4')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">4</button>
-                    <button onclick="pressNum('5')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">5</button>
-                    <button onclick="pressNum('6')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">6</button>
+                    <button onclick="pressNum('4')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">4</button>
+                    <button onclick="pressNum('5')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">5</button>
+                    <button onclick="pressNum('6')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">6</button>
                     
-                    <button onclick="pressNum('1')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">1</button>
-                    <button onclick="pressNum('2')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">2</button>
-                    <button onclick="pressNum('3')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">3</button>
+                    <button onclick="pressNum('1')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">1</button>
+                    <button onclick="pressNum('2')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">2</button>
+                    <button onclick="pressNum('3')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">3</button>
                     
-                    <button onclick="pressNum('0')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">0</button>
-                    <button onclick="pressNum('.')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">.</button>
-                    <button onclick="deleteDigit()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 text-base rounded-lg border border-rose-300 active:bg-rose-300 transition shadow-sm">
+                    <button onclick="pressNum('0')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">0</button>
+                    <button onclick="pressNum('.')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">.</button>
+                    <button onclick="deleteDigit()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2 text-base rounded-lg border border-rose-300 active:bg-rose-300 transition shadow-sm">
                         <i class="fa-solid fa-backspace"></i>
                     </button>
                 </div>
@@ -224,13 +234,13 @@
                     </button>
                     
                     <!-- DELETE BAG VALUE BUTTON -->
-                    <button onclick="deleteCurrentBagValue()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 text-xs rounded-lg border border-rose-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
+                    <button onclick="deleteCurrentBagValue()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-1.5 text-xs rounded-lg border border-rose-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
                         <i class="fa-solid fa-trash-can"></i>
                         <span>XÓA BAO</span>
                     </button>
 
                     <!-- COMPLETE & CALCULATE RECEIPT -->
-                    <button onclick="openBillModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 text-xs rounded-lg border border-amber-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
+                    <button onclick="openBillModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 text-xs rounded-lg border border-amber-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
                         <i class="fa-solid fa-file-invoice-dollar"></i>
                         <span>TÍNH TIỀN</span>
                     </button>
@@ -240,12 +250,12 @@
         </section>
 
         <!-- Copyright & Hotline Footer -->
-        <footer class="text-center py-1 flex-none border-t border-slate-200 bg-white/80 rounded-t-lg">
-            <p class="text-[11px] font-bold text-slate-700 tracking-tight">
+        <footer class="text-center py-0.5 flex-none border-t border-slate-200 bg-white/80 rounded-t-lg">
+            <p class="text-[10px] font-bold text-slate-700 tracking-tight">
                 Phát triển bởi <span class="text-amber-700 font-black">KHOA HOA KỲ</span>
             </p>
-            <p class="text-[10px] font-extrabold text-amber-600 flex items-center justify-center gap-1 mt-0.5">
-                <i class="fa-solid fa-phone text-[9px]"></i> Hotline: <a href="tel:0845325488" class="underline tracking-wide">0845 325 488</a>
+            <p class="text-[9px] font-extrabold text-amber-600 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-phone text-[8px]"></i> Hotline: <a href="tel:0845325488" class="underline tracking-wide">0845 325 488</a>
             </p>
         </footer>
     </main>
@@ -484,13 +494,22 @@
         const MAX_TABLE_PAGES = 10; // Total 10 tables supported (250 bags max per batch)
         const TOTAL_MAX_CELLS = CELLS_PER_TABLE * MAX_TABLE_PAGES; 
 
+        // Style theme for code columns
+        const COL_THEMES = [
+            { bg: 'bg-amber-50/90', border: 'border-amber-200', text: 'text-amber-900', badge: 'bg-amber-500' },
+            { bg: 'bg-emerald-50/90', border: 'border-emerald-200', text: 'text-emerald-900', badge: 'bg-emerald-600' },
+            { bg: 'bg-sky-50/90', border: 'border-sky-200', text: 'text-sky-900', badge: 'bg-sky-600' },
+            { bg: 'bg-indigo-50/90', border: 'border-indigo-200', text: 'text-indigo-900', badge: 'bg-indigo-600' },
+            { bg: 'bg-rose-50/90', border: 'border-rose-200', text: 'text-rose-900', badge: 'bg-rose-600' }
+        ];
+
         // Master array storing up to 250 bag entries across 10 table pages
         let gridData = new Array(TOTAL_MAX_CELLS).fill(null);
         let currentIndex = 0; // Current active cell index globally (0 to 249)
         let currentTablePage = 0; // Page 0 to 9 (corresponds to Table 1 to 10)
 
         let config = {
-            tarePerBag: 0.125, // kg (Supports flexible decimal precision)
+            tarePerBag: 0.125, // kg
             deductRatio: 0.0, // %
             autoDecimal: true,
             voiceEnabled: true,
@@ -503,14 +522,12 @@
         let audioEnabled = true;
         let pendingConfirmCallback = null;
 
-        // Utility helper to format numbers or numbers-as-strings cleanly
         function formatNumberClean(val) {
             if (val === null || val === undefined || isNaN(val)) return "0";
             const num = typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
-            return num.toString(); // Keeps exact entered representation like 0.125 or 0.128
+            return num.toString();
         }
 
-        // Custom Confirm Dialog Utilities
         function showConfirmModal(title, message, onConfirm, btnText = "Đồng Ý Xóa", btnClass = "bg-rose-600 hover:bg-rose-700") {
             document.getElementById('confirmTitle').innerText = title;
             document.getElementById('confirmMessage').innerText = message;
@@ -565,7 +582,6 @@
             document.getElementById('autoDecimalDisplay').innerText = config.autoDecimal ? "502 ➔ 50.2" : "Gõ chính xác";
         }
 
-        // Table Page Switcher Handler
         function changeTablePage(delta) {
             const newPage = currentTablePage + delta;
             if (newPage < 0 || newPage >= MAX_TABLE_PAGES) return;
@@ -574,27 +590,26 @@
             document.getElementById('currentTablePageLabel').innerText = currentTablePage + 1;
             
             buildGridUI();
-            
-            // Set active index to top of new table page
             const pageStartIndex = currentTablePage * CELLS_PER_TABLE;
             selectCell(pageStartIndex);
         }
 
-        // Build Grid HTML for current Table Page (5 columns x 5 rows)
         function buildGridUI() {
             const container = document.getElementById('gridContainer');
             container.innerHTML = '';
 
             const pageBaseIndex = currentTablePage * CELLS_PER_TABLE;
-            const codeBaseNumber = currentTablePage * TOTAL_COLS_PER_TABLE; // Mã 1..5, Mã 6..10, etc.
+            const codeBaseNumber = currentTablePage * TOTAL_COLS_PER_TABLE;
 
             for (let c = 0; c < TOTAL_COLS_PER_TABLE; c++) {
-                const colDiv = document.createElement('div');
-                colDiv.className = "flex flex-col h-full justify-between bg-slate-50/80 p-1 rounded-lg border border-slate-200";
+                const theme = COL_THEMES[c % COL_THEMES.length];
                 
-                // Col Header - Enlarged Font for Code Title
+                const colDiv = document.createElement('div');
+                colDiv.className = `flex flex-col h-full justify-between bg-slate-50 p-1 rounded-lg border ${theme.border}`;
+                
+                // Col Header
                 const header = document.createElement('div');
-                header.className = "text-center font-black text-xs sm:text-sm text-slate-800 border-b border-slate-200 pb-0.5 mb-1 bg-amber-50 rounded py-0.5";
+                header.className = `text-center font-black text-xs text-white pb-0.5 mb-1 ${theme.badge} rounded py-0.5 shadow-sm tracking-tight`;
                 header.innerText = `MÃ ${codeBaseNumber + c + 1}`;
                 colDiv.appendChild(header);
 
@@ -610,12 +625,11 @@
                     const cellBtn = document.createElement('button');
                     cellBtn.id = `cell-${globalIndex}`;
                     cellBtn.onclick = () => selectCell(globalIndex);
-                    cellBtn.className = "cell-item bg-white border border-slate-200 rounded py-1 px-0.5 flex flex-col items-center justify-center transition relative h-full min-h-[36px]";
+                    cellBtn.className = "cell-item bg-white border border-slate-200 rounded py-0.5 px-0.5 flex flex-col items-center justify-center transition relative h-full min-h-[36px]";
                     
-                    // Increased Weight Value Font Size
                     cellBtn.innerHTML = `
                         <span class="text-[8px] text-slate-400 font-bold leading-none">Bao ${baoNumber}</span>
-                        <span class="text-sm font-black text-slate-800 leading-tight val-text">--.--</span>
+                        <span class="text-sm sm:text-base font-black text-slate-800 leading-tight val-text">--.--</span>
                     `;
                     cellsDiv.appendChild(cellBtn);
                 }
@@ -624,28 +638,25 @@
 
                 // Col Total Footer
                 const footer = document.createElement('div');
-                footer.className = "mt-1 pt-1 border-t border-slate-200 text-center bg-amber-100/70 rounded py-0.5";
+                footer.className = `mt-1 pt-1 border-t ${theme.border} text-center ${theme.bg} rounded py-0.5`;
                 footer.innerHTML = `
                     <span class="text-[8px] text-slate-500 font-bold block leading-none">T.MÃ ${codeBaseNumber + c + 1}</span>
-                    <span id="col-total-${c}" class="font-extrabold text-xs text-amber-900 leading-tight">0.0</span>
+                    <span id="col-total-${c}" class="font-black text-xs ${theme.text} leading-tight">0.0</span>
                 `;
                 colDiv.appendChild(footer);
 
                 container.appendChild(colDiv);
             }
 
-            // Populate cells with existing data
             for (let i = 0; i < CELLS_PER_TABLE; i++) {
                 updateCellUI(pageBaseIndex + i);
             }
             updateSummary();
         }
 
-        // Highlight Active Cell
         function selectCell(index) {
             if (index < 0 || index >= TOTAL_MAX_CELLS) return;
 
-            // Automatically switch table page if target index is on another page
             const targetPage = Math.floor(index / CELLS_PER_TABLE);
             if (targetPage !== currentTablePage) {
                 currentTablePage = targetPage;
@@ -653,10 +664,9 @@
                 buildGridUI();
             }
 
-            // Remove active style from previous cell
             const prevCell = document.getElementById(`cell-${currentIndex}`);
             if (prevCell) {
-                prevCell.classList.remove('active-cell', 'bg-blue-50', 'border-blue-500');
+                prevCell.classList.remove('active-cell', 'bg-blue-50');
             }
 
             currentIndex = index;
@@ -668,11 +678,16 @@
                 newCell.classList.add('active-cell', 'bg-blue-50');
             }
 
-            // Update bag indicator
             document.getElementById('currentBaoLabel').innerText = `#${currentIndex + 1}`;
         }
 
-        // Numpad Pressed
+        function navigateCell(delta) {
+            const nextIdx = currentIndex + delta;
+            if (nextIdx >= 0 && nextIdx < TOTAL_MAX_CELLS) {
+                selectCell(nextIdx);
+            }
+        }
+
         function pressNum(digit) {
             if (digit === '.' && currentInputStr.includes('.')) return;
             
@@ -682,6 +697,11 @@
                 currentInputStr += digit;
             }
 
+            updateKeypadDisplay();
+        }
+
+        function setBaseKg(kgStr) {
+            currentInputStr = kgStr;
             updateKeypadDisplay();
         }
 
@@ -698,7 +718,6 @@
             }
 
             let formattedVal = currentInputStr;
-            // Auto decimal logic: if enabled and input has 3 digits without decimal (e.g., 502 -> 50.2)
             if (config.autoDecimal && !currentInputStr.includes('.') && currentInputStr.length >= 3) {
                 formattedVal = (parseFloat(currentInputStr) / 10).toFixed(1);
             }
@@ -707,7 +726,7 @@
         }
 
         function quickAddFraction(fracStr) {
-            let baseVal = 50.0; // Default base if empty
+            let baseVal = 50.0;
             if (gridData[currentIndex] !== null) {
                 baseVal = Math.floor(gridData[currentIndex]);
             } else if (currentInputStr) {
@@ -728,7 +747,6 @@
             return parseFloat(currentInputStr).toFixed(1);
         }
 
-        // Submit Value to Active Cell
         function submitValue() {
             let val = getParsedInputValue();
             if (val === null) {
@@ -744,12 +762,10 @@
                 showToast("⚠️ Số kg bất thường! Hãy kiểm tra lại.");
             }
 
-            // Save data
             gridData[currentIndex] = val;
             updateCellUI(currentIndex);
             updateSummary();
 
-            // Voice Speech Reader
             if (config.voiceEnabled) {
                 speakNumber(val);
             }
@@ -776,7 +792,6 @@
             currentInputStr = "";
             document.getElementById('keypadDisplay').innerText = "0";
 
-            // Check if column just completed
             const isEndOfColumn = (currentIndex + 1) % ROWS_PER_COL === 0;
 
             if (isEndOfColumn && config.voiceEnabled) {
@@ -790,11 +805,9 @@
             }
         }
 
-        // Delete currently selected bag or previous filled bag
         function deleteCurrentBagValue() {
             let targetIdx = currentIndex;
 
-            // If current cell is empty, check if previous cell has data to delete
             if (gridData[targetIdx] === null && targetIdx > 0) {
                 targetIdx = targetIdx - 1;
             }
@@ -814,7 +827,6 @@
             let totalBags = 0;
             let grossWeight = 0;
 
-            // Calculate current table page column totals
             const pageBaseIndex = currentTablePage * CELLS_PER_TABLE;
             for (let c = 0; c < TOTAL_COLS_PER_TABLE; c++) {
                 let colSum = 0;
@@ -828,7 +840,6 @@
                 if (totalElem) totalElem.innerText = colSum.toFixed(1);
             }
 
-            // Calculate overall totals for all 10 tables
             for (let i = 0; i < TOTAL_MAX_CELLS; i++) {
                 if (gridData[i] !== null) {
                     totalBags++;
@@ -841,7 +852,6 @@
             document.getElementById('grossWeight').innerText = grossWeight.toFixed(1);
         }
 
-        // Reset grid silently for next farmer
         function clearGridForNextFarmer() {
             gridData = new Array(TOTAL_MAX_CELLS).fill(null);
             currentTablePage = 0;
@@ -849,7 +859,6 @@
             buildGridUI();
             selectCell(0);
             updateSummary();
-            // Reset default farmer name for new batch
             document.getElementById('farmerName').value = "Nông Dân Mới";
         }
 
@@ -865,7 +874,6 @@
             );
         }
 
-        // Bill / Receipt Calculations
         function openBillModal() {
             const totalBags = gridData.filter(v => v !== null).length;
             if (totalBags === 0) {
@@ -884,7 +892,6 @@
             const price = parseFloat(document.getElementById('ricePrice').value) || 0;
             const totalAmount = netWeight * price;
 
-            // Fill elements
             document.getElementById('billDate').innerText = `Ngày: ${new Date().toLocaleDateString('vi-VN')} ${new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}`;
             document.getElementById('billFarmer').innerText = document.getElementById('farmerName').value;
             document.getElementById('billRiceType').innerText = document.getElementById('riceType').value;
@@ -903,7 +910,6 @@
             document.getElementById('billTotalAmount').innerText = `${Math.round(totalAmount).toLocaleString('vi-VN')} đ`;
 
             calculateFinalMoney();
-
             document.getElementById('billModal').classList.remove('hidden');
         }
 
@@ -926,7 +932,6 @@
             document.getElementById('billModal').classList.add('hidden');
         }
 
-        // History Management
         function saveBatchToHistory() {
             const farmer = document.getElementById('farmerName').value;
             const riceType = document.getElementById('riceType').value;
@@ -965,12 +970,8 @@
             history.unshift(batchRecord);
             localStorage.setItem('rice_app_history', JSON.stringify(history));
 
-            // Reset deposit field for next transaction
             document.getElementById('billDeposit').value = "0";
-
-            // Reset grid back to empty state for next farmer
             clearGridForNextFarmer();
-
             closeBillModal();
             showToast("💾 Đã lưu đợt cân! Bảng cân đã được dọn trống.");
         }
@@ -994,7 +995,6 @@
                     card.className = "bg-slate-50 border border-slate-200 hover:border-amber-400 p-2.5 rounded-xl text-xs space-y-2 shadow-sm transition relative group";
 
                     card.innerHTML = `
-                        <!-- Line 1: STT, Farmer & Price & Delete Single Item Button -->
                         <div class="flex justify-between items-center font-bold text-slate-800 border-b border-slate-200 pb-1 pr-6">
                             <span class="text-blue-700 font-extrabold flex items-center gap-1.5 text-sm" onclick="showHistoryDetailById(${item.id})">
                                 <span class="bg-amber-500 text-white rounded-md px-1.5 py-0.5 text-[11px] font-black shadow-sm">#${stt}</span>
@@ -1003,12 +1003,10 @@
                             <span class="text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded border border-amber-200 font-black" onclick="showHistoryDetailById(${item.id})">${item.price.toLocaleString('vi-VN')} đ/kg</span>
                         </div>
 
-                        <!-- Delete single farmer button -->
                         <button onclick="event.stopPropagation(); deleteSingleHistory(${item.id});" class="absolute top-2 right-2 text-slate-300 hover:text-rose-600 p-1 rounded transition" title="Xóa đợt cân này">
                             <i class="fa-solid fa-trash-can text-sm"></i>
                         </button>
 
-                        <!-- Line 2: Bag Count & Gross Weight -->
                         <div class="grid grid-cols-2 gap-1 text-[11px] bg-white p-1.5 rounded border border-slate-200" onclick="showHistoryDetailById(${item.id})">
                             <div>
                                 <span class="text-slate-400 block text-[9px]">SỐ BAO CÂN:</span>
@@ -1020,7 +1018,6 @@
                             </div>
                         </div>
 
-                        <!-- Line 3: Total Money & Remaining Payment -->
                         <div class="flex justify-between items-center bg-amber-50 p-1.5 rounded border border-amber-200 text-xs" onclick="showHistoryDetailById(${item.id})">
                             <div>
                                 <span class="text-slate-500 block text-[9px]">TỔNG TIỀN LÚA:</span>
@@ -1032,7 +1029,6 @@
                             </div>
                         </div>
 
-                        <!-- Line 4: Date & Action hint -->
                         <div class="flex justify-between items-center text-[10px] text-slate-400 pt-0.5" onclick="showHistoryDetailById(${item.id})">
                             <span>Giống: <b>${item.riceType}</b> • ${item.date}</span>
                             <span class="text-blue-600 font-semibold flex items-center gap-0.5">
@@ -1047,7 +1043,6 @@
             document.getElementById('historyModal').classList.remove('hidden');
         }
 
-        // Helper to fetch item by ID and show details
         function showHistoryDetailById(id) {
             const history = JSON.parse(localStorage.getItem('rice_app_history') || '[]');
             const index = history.findIndex(h => h.id === id);
@@ -1056,7 +1051,6 @@
             }
         }
 
-        // Delete a single farmer record from history
         function deleteSingleHistory(id) {
             showConfirmModal(
                 "Xóa Đợt Cân",
@@ -1071,7 +1065,6 @@
             );
         }
 
-        // Show Individual Bags Modal when Farmer is Clicked
         function showHistoryDetail(record, stt) {
             const netWeight = record.netWeight !== undefined ? record.netWeight : Math.max(0, record.grossWeight - (record.totalBags * (record.tareRate || 0.125)));
             const remainingAmount = record.remainingAmount !== undefined ? record.remainingAmount : Math.round(netWeight * record.price) - (record.deposit || 0);
@@ -1085,7 +1078,6 @@
 
             const data = record.gridData || [];
             
-            // Find total used columns
             let maxUsedCellIndex = -1;
             for (let i = data.length - 1; i >= 0; i--) {
                 if (data[i] !== null) {
@@ -1100,11 +1092,13 @@
                 const totalUsedCols = Math.ceil((maxUsedCellIndex + 1) / ROWS_PER_COL);
 
                 for (let c = 0; c < totalUsedCols; c++) {
+                    const theme = COL_THEMES[c % COL_THEMES.length];
+                    
                     const colDiv = document.createElement('div');
-                    colDiv.className = "bg-slate-50 border border-slate-200 rounded-lg p-1 flex flex-col justify-between";
+                    colDiv.className = `bg-slate-50 border ${theme.border} rounded-lg p-1 flex flex-col justify-between`;
 
                     const colHeader = document.createElement('div');
-                    colHeader.className = "text-center font-black text-xs text-amber-800 border-b border-slate-200 pb-0.5 mb-1 bg-amber-50 rounded py-0.5";
+                    colHeader.className = `text-center font-black text-xs text-white pb-0.5 mb-1 ${theme.badge} rounded py-0.5 shadow-sm`;
                     colHeader.innerText = `MÃ ${c + 1}`;
                     colDiv.appendChild(colHeader);
 
@@ -1131,10 +1125,10 @@
                     colDiv.appendChild(cellsDiv);
 
                     const colFooter = document.createElement('div');
-                    colFooter.className = "mt-1 pt-0.5 border-t border-slate-200 text-center bg-amber-100/60 rounded";
+                    colFooter.className = `mt-1 pt-0.5 border-t ${theme.border} text-center ${theme.bg} rounded`;
                     colFooter.innerHTML = `
                         <span class="text-[8px] text-slate-500 font-bold block">T.MÃ</span>
-                        <span class="font-extrabold text-xs text-amber-900">${colSum.toFixed(1)}</span>
+                        <span class="font-black text-xs ${theme.text}">${colSum.toFixed(1)}</span>
                     `;
                     colDiv.appendChild(colFooter);
 
@@ -1165,7 +1159,6 @@
             );
         }
 
-        // Settings Modal Handlers
         function openSettingsModal() {
             document.getElementById('settingsModal').classList.remove('hidden');
         }
@@ -1176,7 +1169,6 @@
 
         function saveSettings() {
             let tareInput = document.getElementById('settingTare').value;
-            // Support both comma and dot e.g. 0,125 or 0.125
             tareInput = tareInput.replace(',', '.');
             const parsedTare = parseFloat(tareInput);
 
@@ -1203,7 +1195,6 @@
             localStorage.setItem('rice_app_config', JSON.stringify(config));
         }
 
-        // Audio & Speech Utilities
         function toggleAudio() {
             audioEnabled = !audioEnabled;
             config.voiceEnabled = audioEnabled;
@@ -1218,7 +1209,7 @@
             const numStr = num.toFixed(1).toString().replace('.', ' phẩy ');
             const utterance = new SpeechSynthesisUtterance(numStr);
             utterance.lang = 'vi-VN';
-            utterance.rate = 1.1;
+            utterance.rate = 1.15;
             window.speechSynthesis.speak(utterance);
         }
 
@@ -1235,16 +1226,13 @@
                 gain.gain.setValueAtTime(0.2, ctx.currentTime);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.15);
-            } catch (e) {
-                // Audio context policy fallback
-            }
+            } catch (e) {}
         }
 
         function shareOrPrint() {
             window.print();
         }
 
-        // Toast Helper
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
@@ -1256,4 +1244,3 @@
     </script>
 </body>
 </html>
-
