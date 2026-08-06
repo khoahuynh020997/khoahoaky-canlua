@@ -106,7 +106,7 @@
             <div class="grid grid-cols-3 gap-1 text-center text-xs">
                 <div class="bg-slate-50 p-1 rounded border border-slate-100">
                     <span class="text-slate-400 block text-[10px]">Trừ Bì/Bao</span>
-                    <span class="font-bold text-slate-700" id="tareDisplay">0.10 kg</span>
+                    <span class="font-bold text-slate-700" id="tareDisplay">0.125 kg</span>
                 </div>
                 <div class="bg-slate-50 p-1 rounded border border-slate-100">
                     <span class="text-slate-400 block text-[10px]">Tẩy/Hao Hụt</span>
@@ -223,10 +223,10 @@
                         <i class="fa-solid fa-turn-down rotate-90 text-sm"></i>
                     </button>
                     
-                    <!-- CUT CODE EARLY / CUT COLUMN -->
-                    <button onclick="forceCutCode()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 text-xs rounded-lg border border-emerald-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-scissors"></i>
-                        <span>CẮT MÃ SỚM</span>
+                    <!-- DELETE BAG VALUE BUTTON -->
+                    <button onclick="deleteCurrentBagValue()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 text-xs rounded-lg border border-rose-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>XÓA BAO</span>
                     </button>
 
                     <!-- COMPLETE & CALCULATE RECEIPT -->
@@ -258,7 +258,7 @@
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Trọng lượng Vỏ Bao (Bì)</label>
                     <div class="flex items-center gap-2">
-                        <input type="number" id="settingTare" step="0.01" value="0.10" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800">
+                        <input type="text" id="settingTare" value="0.125" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800">
                         <span class="font-bold text-slate-500">kg/bao</span>
                     </div>
                 </div>
@@ -343,7 +343,7 @@
                         <span class="font-bold" id="billGrossWeight">0.0 kg</span>
                     </div>
                     <div class="flex justify-between text-rose-600">
-                        <span>Trừ bì (<span id="billBagsForTare">0</span> bao x <span id="billTareRate">0.1</span>kg):</span>
+                        <span>Trừ bì (<span id="billBagsForTare">0</span> bao x <span id="billTareRate">0.125</span>kg):</span>
                         <span class="font-bold" id="billTotalTare">-0.0 kg</span>
                     </div>
                     <div class="flex justify-between text-rose-600">
@@ -480,7 +480,7 @@
         let currentTablePage = 0; // Page 0 to 9 (corresponds to Table 1 to 10)
 
         let config = {
-            tarePerBag: 0.10, // kg
+            tarePerBag: 0.125, // kg (Supports flexible decimal precision)
             deductRatio: 0.0, // %
             autoDecimal: true,
             voiceEnabled: true,
@@ -492,6 +492,13 @@
         let currentInputStr = "";
         let audioEnabled = true;
         let pendingConfirmCallback = null;
+
+        // Utility helper to format numbers or numbers-as-strings cleanly
+        function formatNumberClean(val) {
+            if (val === null || val === undefined || isNaN(val)) return "0";
+            const num = typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+            return num.toString(); // Keeps exact entered representation like 0.125 or 0.128
+        }
 
         // Custom Confirm Dialog Utilities
         function showConfirmModal(title, message, onConfirm, btnText = "Đồng Ý Xóa", btnClass = "bg-rose-600 hover:bg-rose-700") {
@@ -543,7 +550,7 @@
         }
 
         function updateConfigDisplays() {
-            document.getElementById('tareDisplay').innerText = `${parseFloat(config.tarePerBag).toFixed(2)} kg`;
+            document.getElementById('tareDisplay').innerText = `${formatNumberClean(config.tarePerBag)} kg`;
             document.getElementById('deductDisplay').innerText = `${parseFloat(config.deductRatio).toFixed(1)} %`;
             document.getElementById('autoDecimalDisplay').innerText = config.autoDecimal ? "502 ➔ 50.2" : "Gõ chính xác";
         }
@@ -773,20 +780,24 @@
             }
         }
 
-        // Force Cut Code (Jump to top of next column)
-        function forceCutCode() {
-            const localColumn = Math.floor((currentIndex % CELLS_PER_TABLE) / ROWS_PER_COL);
-            const globalColumn = Math.floor(currentIndex / ROWS_PER_COL);
+        // Delete currently selected bag or previous filled bag
+        function deleteCurrentBagValue() {
+            let targetIdx = currentIndex;
 
-            if (globalColumn >= (MAX_TABLE_PAGES * TOTAL_COLS_PER_TABLE) - 1) {
-                showToast("Đã ở mã cân cuối cùng!");
-                return;
+            // If current cell is empty, check if previous cell has data to delete
+            if (gridData[targetIdx] === null && targetIdx > 0) {
+                targetIdx = targetIdx - 1;
             }
 
-            const nextColStartIndex = (globalColumn + 1) * ROWS_PER_COL;
-            selectCell(nextColStartIndex);
-            showToast(`Đã chốt sớm Mã ${globalColumn + 1} ➔ Chuyển sang Mã ${globalColumn + 2}`);
-            playBeepSound();
+            if (gridData[targetIdx] !== null) {
+                gridData[targetIdx] = null;
+                updateCellUI(targetIdx);
+                selectCell(targetIdx);
+                updateSummary();
+                showToast(`Đã xóa số kg Bao #${targetIdx + 1}`);
+            } else {
+                showToast("Ô hiện tại đang trống!");
+            }
         }
 
         function updateSummary() {
@@ -853,10 +864,10 @@
             }
 
             const grossWeight = gridData.reduce((acc, v) => acc + (v || 0), 0);
-            const tareRate = parseFloat(config.tarePerBag);
+            const tareRate = parseFloat(config.tarePerBag) || 0;
             const totalTare = totalBags * tareRate;
 
-            const deductRate = parseFloat(config.deductRatio);
+            const deductRate = parseFloat(config.deductRatio) || 0;
             const totalDeduct = ((grossWeight - totalTare) * (deductRate / 100));
 
             const netWeight = Math.max(0, grossWeight - totalTare - totalDeduct);
@@ -872,8 +883,8 @@
             document.getElementById('billTotalBags').innerText = `${totalBags} bao`;
             document.getElementById('billGrossWeight').innerText = `${grossWeight.toFixed(1)} kg`;
             document.getElementById('billBagsForTare').innerText = totalBags;
-            document.getElementById('billTareRate').innerText = tareRate.toFixed(2);
-            document.getElementById('billTotalTare').innerText = `-${totalTare.toFixed(1)} kg`;
+            document.getElementById('billTareRate').innerText = formatNumberClean(config.tarePerBag);
+            document.getElementById('billTotalTare').innerText = `-${totalTare.toFixed(3)} kg`;
 
             document.getElementById('billDeductRate').innerText = deductRate.toFixed(1);
             document.getElementById('billTotalDeduct').innerText = `-${totalDeduct.toFixed(1)} kg`;
@@ -889,8 +900,8 @@
         function calculateFinalMoney() {
             const grossWeight = gridData.reduce((acc, v) => acc + (v || 0), 0);
             const totalBags = gridData.filter(v => v !== null).length;
-            const totalTare = totalBags * parseFloat(config.tarePerBag);
-            const totalDeduct = ((grossWeight - totalTare) * (parseFloat(config.deductRatio) / 100));
+            const totalTare = totalBags * (parseFloat(config.tarePerBag) || 0);
+            const totalDeduct = ((grossWeight - totalTare) * ((parseFloat(config.deductRatio) || 0) / 100));
             const netWeight = Math.max(0, grossWeight - totalTare - totalDeduct);
             const price = parseFloat(document.getElementById('ricePrice').value) || 0;
             const totalAmount = Math.round(netWeight * price);
@@ -913,9 +924,9 @@
             const totalBags = gridData.filter(v => v !== null).length;
             const grossWeight = gridData.reduce((acc, v) => acc + (v || 0), 0);
 
-            const tareRate = parseFloat(config.tarePerBag);
+            const tareRate = parseFloat(config.tarePerBag) || 0;
             const totalTare = totalBags * tareRate;
-            const deductRate = parseFloat(config.deductRatio);
+            const deductRate = parseFloat(config.deductRatio) || 0;
             const totalDeduct = ((grossWeight - totalTare) * (deductRate / 100));
             const netWeight = Math.max(0, grossWeight - totalTare - totalDeduct);
 
@@ -965,7 +976,7 @@
             } else {
                 history.forEach((item, index) => {
                     const stt = index + 1;
-                    const netWeight = item.netWeight !== undefined ? item.netWeight : Math.max(0, item.grossWeight - (item.totalBags * (item.tareRate || 0.1)));
+                    const netWeight = item.netWeight !== undefined ? item.netWeight : Math.max(0, item.grossWeight - (item.totalBags * (item.tareRate || 0.125)));
                     const totalAmount = item.totalAmount !== undefined ? item.totalAmount : Math.round(netWeight * item.price);
                     const remainingAmount = item.remainingAmount !== undefined ? item.remainingAmount : totalAmount - (item.deposit || 0);
 
@@ -1052,7 +1063,7 @@
 
         // Show Individual Bags Modal when Farmer is Clicked
         function showHistoryDetail(record, stt) {
-            const netWeight = record.netWeight !== undefined ? record.netWeight : Math.max(0, record.grossWeight - (record.totalBags * (record.tareRate || 0.1)));
+            const netWeight = record.netWeight !== undefined ? record.netWeight : Math.max(0, record.grossWeight - (record.totalBags * (record.tareRate || 0.125)));
             const remainingAmount = record.remainingAmount !== undefined ? record.remainingAmount : Math.round(netWeight * record.price) - (record.deposit || 0);
 
             const sttBadge = stt ? `[STT #${stt}] ` : '';
@@ -1154,7 +1165,12 @@
         }
 
         function saveSettings() {
-            config.tarePerBag = parseFloat(document.getElementById('settingTare').value) || 0;
+            let tareInput = document.getElementById('settingTare').value;
+            // Support both comma and dot e.g. 0,125 or 0.125
+            tareInput = tareInput.replace(',', '.');
+            const parsedTare = parseFloat(tareInput);
+
+            config.tarePerBag = isNaN(parsedTare) ? 0.125 : parsedTare;
             config.deductRatio = parseFloat(document.getElementById('settingDeduct').value) || 0;
             config.autoDecimal = document.getElementById('settingAutoDecimal').checked;
             config.voiceEnabled = document.getElementById('settingVoice').checked;
