@@ -38,12 +38,13 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         .active-cell {
-            box-shadow: 0 0 0 3px #2563eb, inset 0 0 0 2px #ffffff;
-            animation: pulse-border 1.5s infinite;
+            box-shadow: 0 0 0 3.5px #2563eb, inset 0 0 0 2px #ffffff;
+            animation: pulse-border 1.2s infinite;
+            background-color: #eff6ff !important;
         }
         @keyframes pulse-border {
             0%, 100% { border-color: #2563eb; }
-            50% { border-color: #60a5fa; }
+            50% { border-color: #3b82f6; }
         }
         /* Custom scrollbar for grid if screen is very small */
         .custom-scroll::-webkit-scrollbar {
@@ -60,209 +61,310 @@
 
     <!-- Top Navigation Header -->
     <header class="bg-amber-600 text-white shadow-md flex-none z-10">
-        <div class="max-w-md mx-auto px-3 py-2 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fa-solid font-bold fa-wheat-awn text-xl text-yellow-300"></i>
-                <div>
-                    <h1 class="font-bold text-base leading-tight">Khoa Hoa Kỳ - CÂN LÚA PRO v2.0</h1>
-                    <p class="text-[10px] text-amber-100 uppercase tracking-wider font-semibold">Sổ Cân Lúa Ngoài Đồng</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <button onclick="toggleAudio()" id="audioBtn" class="bg-amber-700/80 hover:bg-amber-800 text-yellow-300 p-2 rounded-lg text-sm flex items-center gap-1 border border-amber-500">
-                    <i class="fa-solid fa-volume-high" id="audioIcon"></i>
-                    <span class="text-xs font-bold hidden sm:inline">Âm thanh</span>
+        <div class="max-w-md mx-auto px-2.5 py-1.5 flex justify-between items-center">
+            <div class="flex items-center space-x-1.5">
+                <button onclick="switchView('home')" class="bg-amber-700 hover:bg-amber-800 text-white p-1.5 rounded-lg text-xs flex items-center gap-1 border border-amber-500 font-extrabold shadow-sm active:scale-95 transition">
+                    <i class="fa-solid fa-house text-sm"></i>
+                    <span class="text-xs">TRANG CHỦ</span>
                 </button>
-                <button onclick="openHistoryModal()" class="bg-amber-700/80 hover:bg-amber-800 text-white p-2 rounded-lg text-sm flex items-center gap-1 border border-amber-500">
+            </div>
+            
+            <div class="text-center">
+                <h1 class="font-black text-sm leading-tight tracking-tight text-yellow-300">Khoa Hoa Kỳ - CÂN LÚA PRO v2.0</h1>
+                <p class="text-[9px] text-amber-100 uppercase tracking-widest font-bold">SỔ CÂN LÚA NGOÀI ĐỒNG</p>
+            </div>
+
+            <div class="flex items-center space-x-1">
+                <button onclick="toggleAudio()" id="audioBtn" class="bg-amber-700/80 hover:bg-amber-800 text-yellow-300 p-1.5 rounded-lg text-xs border border-amber-500">
+                    <i class="fa-solid fa-volume-high" id="audioIcon"></i>
+                </button>
+                <button onclick="openHistoryModal()" class="bg-amber-700/80 hover:bg-amber-800 text-white p-1.5 rounded-lg text-xs border border-amber-500">
                     <i class="fa-solid fa-list-check"></i>
-                    <span class="text-xs font-bold hidden sm:inline">Lịch sử</span>
                 </button>
             </div>
         </div>
     </header>
 
     <!-- App Main Container -->
-    <main class="flex-1 max-w-md w-full mx-auto flex flex-col justify-between overflow-hidden p-2 gap-1.5">
+    <main class="flex-1 max-w-md w-full mx-auto flex flex-col justify-between overflow-hidden p-1.5 gap-1.5">
 
-        <!-- 1. Header Information Bar -->
-        <section class="bg-white rounded-xl p-2 shadow-sm border border-slate-200 flex-none">
-            <div class="flex justify-between items-start border-b border-slate-100 pb-1 mb-1">
-                <div class="flex-1">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-xs text-slate-500 font-medium">Chủ ruộng:</span>
-                        <input type="text" id="farmerName" value="Anh Ba Cường" onchange="updateBatchInfo()" class="font-bold text-sm text-slate-800 border-b border-dashed border-slate-300 focus:outline-none focus:border-amber-500 bg-transparent w-36">
-                    </div>
-                    <div class="flex items-center gap-2 text-xs text-slate-600 mt-0.5">
-                        <span>Lúa: <input type="text" id="riceType" value="ST25" onchange="updateBatchInfo()" class="font-semibold text-amber-700 w-16 border-b border-dashed border-slate-300 focus:outline-none bg-transparent"></span>
-                        <span>•</span>
-                        <span>Giá: <input type="number" id="ricePrice" value="8500" onchange="updateBatchInfo()" class="font-semibold text-emerald-700 w-16 border-b border-dashed border-slate-300 focus:outline-none bg-transparent"> đ/kg</span>
-                    </div>
-                </div>
-                <button onclick="openSettingsModal()" class="text-slate-400 hover:text-amber-600 p-1">
-                    <i class="fa-solid fa-gear text-lg"></i>
-                </button>
-            </div>
-
-            <div class="grid grid-cols-3 gap-1 text-center text-xs">
-                <div class="bg-slate-50 p-1 rounded border border-slate-100">
-                    <span class="text-slate-400 block text-[10px]">Trừ Bì/Bao</span>
-                    <span class="font-bold text-slate-700" id="tareDisplay">0.125 kg</span>
-                </div>
-                <div class="bg-slate-50 p-1 rounded border border-slate-100">
-                    <span class="text-slate-400 block text-[10px]">Tẩy/Hao Hụt</span>
-                    <span class="font-bold text-slate-700" id="deductDisplay">0.0 %</span>
-                </div>
-                <div class="bg-amber-50 p-1 rounded border border-amber-200">
-                    <span class="text-amber-600 block text-[10px] font-medium">Cơ Chế Nhập</span>
-                    <span class="font-bold text-amber-800" id="autoDecimalDisplay">502 ➔ 50.2</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. Grid 5 Columns x 5 Rows with 10 Table Pages Pagination -->
-        <section class="bg-white rounded-xl p-2 shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0 justify-between">
+        <!-- VIEW 1: HOME DASHBOARD PAGE -->
+        <div id="homeView" class="flex-1 flex flex-col gap-2.5 min-h-0 overflow-y-auto custom-scroll">
             
-            <!-- Table Controls & Pagination -->
-            <div class="flex justify-between items-center mb-1 px-1 gap-1">
-                <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
-                    <i class="fa-solid fa-table-cells text-amber-500"></i> BẢNG MÃ CÂN
-                </span>
-
-                <!-- 10 Tables Switcher -->
-                <div class="flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200">
-                    <button onclick="changeTablePage(-1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm hover:bg-amber-50 active:scale-95 text-xs text-slate-700 font-bold border border-slate-200">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </button>
-                    <span class="px-2 text-xs font-black text-amber-800 tracking-tight">
-                        BẢNG <span id="currentTablePageLabel" class="text-sm font-black text-blue-700">1</span>/10
+            <!-- Boat / Truck Information Card -->
+            <section class="bg-white rounded-xl p-3 shadow-sm border border-slate-200 space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <h2 class="font-extrabold text-sm text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-ship text-amber-600"></i> QUẢN LÝ CHỦ GHE / XE THU MUA
+                    </h2>
+                    <span class="bg-emerald-100 text-emerald-800 font-bold text-[10px] px-2 py-0.5 rounded-full border border-emerald-200">
+                        Đang Mua
                     </span>
-                    <button onclick="changeTablePage(1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm hover:bg-amber-50 active:scale-95 text-xs text-slate-700 font-bold border border-slate-200">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
                 </div>
-            </div>
 
-            <!-- 5x5 Grid Table -->
-            <div class="flex-1 custom-scroll overflow-y-auto min-h-0">
-                <div class="grid grid-cols-5 gap-1 h-full min-h-[210px]">
-                    <div id="gridContainer" class="col-span-5 grid grid-cols-5 gap-1 h-full"></div>
+                <div class="space-y-2 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-500 mb-1">Tên Chủ Ghe / Xe / Số Hiệu Xuồng:</label>
+                        <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                            <i class="fa-solid fa-truck-droplet text-amber-600 text-sm"></i>
+                            <input type="text" id="boatName" value="Ghe Chị Tám (Đồng Tháp)" onchange="updateBoatInfo()" class="font-bold text-sm text-slate-800 bg-transparent focus:outline-none w-full" placeholder="Nhập tên chủ ghe/xe...">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                            <span class="text-slate-400 block text-[10px]">TỔNG SẢN LƯỢNG GHE</span>
+                            <span class="font-black text-emerald-700 text-sm" id="homeTotalNetWeight">0.0 kg</span>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                            <span class="text-slate-400 block text-[10px]">TỔNG TIỀN ĐÃ CHI</span>
+                            <span class="font-black text-blue-700 text-sm" id="homeTotalAmount">0 đ</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Summary Strip below grid -->
-            <div class="mt-1 bg-slate-800 text-white p-2 rounded-lg flex justify-between items-center shadow-inner">
+            <!-- Quick Start Action Banner -->
+            <section class="bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl p-3.5 shadow flex justify-between items-center text-white">
                 <div>
-                    <span class="text-[10px] text-slate-400 block font-medium">TỔNG ĐÃ CÂN</span>
-                    <div class="text-sm font-bold text-amber-400">
-                        <span id="totalBags">0</span> bao <span class="text-slate-400 font-normal text-xs">(<span id="totalCodes">0.0</span> mã)</span>
+                    <h3 class="font-black text-sm">SẴN SÀNG CÂN LÚA?</h3>
+                    <p class="text-[11px] text-amber-100">Bắt đầu nhập thông tin nông dân mới</p>
+                </div>
+                <button onclick="openNewFarmerModal()" class="bg-white text-amber-800 hover:bg-amber-50 font-black px-3.5 py-2 rounded-lg text-xs shadow-md transition active:scale-95 flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-plus text-amber-600"></i>
+                    <span>CÂN MỚI</span>
+                </button>
+            </section>
+
+            <!-- Recent Batches List under current Boat -->
+            <section class="bg-white rounded-xl p-3 shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
+                <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-100">
+                    <span class="font-bold text-xs text-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-receipt text-amber-600"></i> DANH SÁCH LÚA ĐÃ CÂN TRÊN GHE
+                    </span>
+                    <button onclick="openHistoryModal()" class="text-[11px] text-blue-600 font-bold hover:underline">
+                        Xem tất cả
+                    </button>
+                </div>
+
+                <div id="homeRecentList" class="flex-1 overflow-y-auto space-y-2 pr-0.5 custom-scroll">
+                    <!-- Dynamic Recent Farmers List -->
+                </div>
+            </section>
+
+        </div>
+
+        <!-- VIEW 2: SCALE INPUT GRID PAGE (Grid takes ~2/3 of screen) -->
+        <div id="scaleView" class="flex-1 flex flex-col gap-1 min-h-0 hidden">
+
+            <!-- Editing Badge Indicator (Shown when editing an existing batch) -->
+            <div id="editingBadge" class="bg-blue-50 border border-blue-200 rounded-lg px-2.5 py-1 text-xs font-bold text-blue-800 flex justify-between items-center hidden">
+                <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-pen-to-square text-blue-600"></i>
+                    <span>Đang sửa đợt cân: <b id="editingFarmerTitle" class="text-amber-700">--</b></span>
+                </span>
+                <button onclick="cancelEditingBatch()" class="text-rose-600 hover:text-rose-800 text-[11px] font-black underline">
+                    Thoát
+                </button>
+            </div>
+
+            <!-- Compact Header Bar (Farmer Name & Price Strip) -->
+            <section class="bg-white rounded-lg px-2 py-1 shadow-sm border border-slate-200 flex-none flex justify-between items-center text-xs">
+                <div class="flex items-center gap-1 overflow-hidden flex-1">
+                    <span class="text-slate-400 font-bold text-[11px] shrink-0">Chủ ruộng:</span>
+                    <input type="text" id="farmerName" value="Anh Ba Cường" onchange="updateBatchInfo()" class="font-black text-sm text-blue-800 border-b border-dashed border-slate-300 focus:outline-none focus:border-amber-500 bg-transparent w-full truncate">
+                </div>
+                
+                <div class="flex items-center gap-1.5 shrink-0 ml-1">
+                    <span class="text-slate-600 font-bold text-[11px]">Lúa: <input type="text" id="riceType" value="ST25" onchange="updateBatchInfo()" class="font-black text-amber-700 w-11 border-b border-dashed border-slate-300 focus:outline-none bg-transparent"></span>
+                    <span class="text-slate-600 font-bold text-[11px]">Giá: <input type="number" id="ricePrice" value="8500" onchange="updateBatchInfo()" class="font-black text-emerald-700 w-12 border-b border-dashed border-slate-300 focus:outline-none bg-transparent"></span>
+                    <button onclick="openSettingsModal()" class="text-slate-400 hover:text-amber-600 p-0.5">
+                        <i class="fa-solid fa-gear text-sm"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ENLARGED 5x5 GRID TABLE (~2/3 MÀN HÌNH - CHỮ SỐ GIÁ CÂN SIÊU TO) -->
+            <section class="bg-white rounded-xl p-1 shadow-sm border border-slate-200 flex-[3] flex flex-col min-h-0 justify-between">
+                
+                <!-- Table Controls & Pagination -->
+                <div class="flex justify-between items-center mb-0.5 px-1 gap-1 flex-none">
+                    <span class="text-xs font-black text-slate-800 flex items-center gap-1">
+                        <i class="fa-solid fa-table-cells text-amber-500 text-sm"></i> BẢNG MÃ CÂN
+                    </span>
+
+                    <!-- 100 Tables Switcher -->
+                    <div class="flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200">
+                        <button onclick="changeTablePage(-1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm hover:bg-amber-50 active:scale-95 text-xs text-slate-700 font-black border border-slate-200">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <span class="px-2 text-xs font-black text-amber-800 tracking-tight">
+                            BẢNG <span id="currentTablePageLabel" class="text-sm font-black text-blue-700">1</span>/100
+                        </span>
+                        <button onclick="changeTablePage(1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm hover:bg-amber-50 active:scale-95 text-xs text-slate-700 font-black border border-slate-200">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="text-right">
-                    <span class="text-[10px] text-slate-400 block font-medium">TỔNG KHỐI LƯỢNG LÚA</span>
-                    <div class="text-base font-extrabold text-emerald-400">
-                        <span id="grossWeight">0.0</span> <span class="text-xs font-normal text-slate-300">kg</span>
+
+                <!-- 5x5 Grid Table (Enlarged Cells & Big Fonts for Seniors) -->
+                <div class="flex-1 custom-scroll overflow-y-auto min-h-0">
+                    <div class="grid grid-cols-5 gap-1 h-full">
+                        <div id="gridContainer" class="col-span-5 grid grid-cols-5 gap-1 h-full"></div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- 3. Keypad & Quick Controls Section -->
-        <section class="bg-white rounded-xl p-2 shadow-sm border border-slate-200 flex-none gap-1 flex flex-col">
-            
-            <!-- Direct Value Display Input / Quick Add Strip -->
-            <div class="flex items-center gap-1">
-                <!-- Navigation Arrows & Current Typing Display -->
-                <button onclick="navigateCell(-1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95 border border-slate-300" title="Ô trước">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
+                <!-- Summary Strip below grid -->
+                <div class="mt-0.5 bg-slate-800 text-white px-2 py-1 rounded-lg flex justify-between items-center shadow-inner flex-none">
+                    <div>
+                        <span class="text-[9px] text-slate-400 block font-bold leading-none">TỔNG ĐÃ CÂN</span>
+                        <div class="text-sm font-black text-amber-400 leading-tight">
+                            <span id="totalBags">0</span> bao <span class="text-slate-400 font-normal text-xs">(<span id="totalCodes">0.0</span> mã)</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[9px] text-slate-400 block font-bold leading-none">TỔNG KHỐI LƯỢNG LÚA</span>
+                        <div class="text-lg font-black text-emerald-400 leading-tight">
+                            <span id="grossWeight">0.0</span> <span class="text-xs font-normal text-slate-300">kg</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Keypad & Auto-Entry Section (No Enter button needed) -->
+            <section class="bg-white rounded-xl p-1 shadow-sm border border-slate-200 flex-[2] flex flex-col justify-between min-h-0">
                 
-                <div class="flex-1 bg-slate-100 rounded-lg px-2 py-1 border border-slate-300 flex justify-between items-center">
-                    <span class="text-xs text-slate-400 font-medium">Bao <span id="currentBaoLabel" class="text-slate-700 font-bold">#1</span>:</span>
-                    <span id="keypadDisplay" class="text-xl font-black text-blue-700 tracking-wider">0</span>
+                <!-- Display currently typing value & Quick Fraction buttons -->
+                <div class="flex items-center gap-1 flex-none">
+                    <!-- Typing display -->
+                    <div class="flex-1 bg-slate-100 rounded-lg px-2 py-0.5 border border-slate-300 flex justify-between items-center">
+                        <span class="text-xs text-slate-500 font-extrabold">Đang nhập Bao <span id="currentBaoLabel" class="text-blue-800 font-black text-sm">#1</span>:</span>
+                        <span id="keypadDisplay" class="text-xl font-black text-blue-700 tracking-wider">0</span>
+                    </div>
+                    
+                    <!-- Quick add buttons (+0.2, +0.5, +0.8 - Auto submits) -->
+                    <div class="flex gap-1">
+                        <button onclick="quickAddFraction('0.2')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-black px-2 py-1 rounded-lg text-xs transition active:scale-95">
+                            +0.2
+                        </button>
+                        <button onclick="quickAddFraction('0.5')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-black px-2 py-1 rounded-lg text-xs transition active:scale-95">
+                            +0.5
+                        </button>
+                        <button onclick="quickAddFraction('0.8')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-black px-2 py-1 rounded-lg text-xs transition active:scale-95">
+                            +0.8
+                        </button>
+                    </div>
                 </div>
 
-                <button onclick="navigateCell(1)" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-2 py-1.5 rounded-lg text-xs transition active:scale-95 border border-slate-300" title="Ô sau">
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
+                <!-- Numpad Grid (Re-arranged without Enter Button) -->
+                <div class="grid grid-cols-12 gap-1 flex-1 min-h-0 pt-0.5">
+                    
+                    <!-- Numpad 4x3 (9 Columns wide) -->
+                    <div class="col-span-9 grid grid-cols-3 gap-1 h-full">
+                        <button onclick="pressNum('7')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">7</button>
+                        <button onclick="pressNum('8')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">8</button>
+                        <button onclick="pressNum('9')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">9</button>
+                        
+                        <button onclick="pressNum('4')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">4</button>
+                        <button onclick="pressNum('5')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">5</button>
+                        <button onclick="pressNum('6')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">6</button>
+                        
+                        <button onclick="pressNum('1')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">1</button>
+                        <button onclick="pressNum('2')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">2</button>
+                        <button onclick="pressNum('3')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">3</button>
+                        
+                        <button onclick="pressNum('0')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">0</button>
+                        <button onclick="pressNum('.')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xl rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm h-full flex items-center justify-center">.</button>
+                        <button onclick="deleteDigit()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-lg rounded-lg border border-rose-300 active:bg-rose-300 transition shadow-sm h-full flex items-center justify-center">
+                            <i class="fa-solid fa-backspace"></i>
+                        </button>
+                    </div>
 
-            <!-- Quick Base Weight Preset & Fraction Adders -->
-            <div class="grid grid-cols-8 gap-1">
-                <!-- Base Kg Presets -->
-                <button onclick="setBaseKg('50')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">50</button>
-                <button onclick="setBaseKg('51')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">51</button>
-                <button onclick="setBaseKg('52')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">52</button>
-                <button onclick="setBaseKg('53')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">53</button>
-                <button onclick="setBaseKg('54')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 font-bold py-1 rounded text-xs transition active:scale-95">54</button>
-                
-                <!-- Quick Fraction Adders -->
-                <button onclick="quickAddFraction('0.2')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold py-1 rounded text-xs transition active:scale-95">+0.2</button>
-                <button onclick="quickAddFraction('0.5')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold py-1 rounded text-xs transition active:scale-95">+0.5</button>
-                <button onclick="quickAddFraction('0.8')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold py-1 rounded text-xs transition active:scale-95">+0.8</button>
-            </div>
+                    <!-- Right Column Action Buttons (3 Columns wide) -->
+                    <div class="col-span-3 flex flex-col gap-1 h-full">
+                        <!-- DELETE BAG VALUE BUTTON -->
+                        <button onclick="deleteCurrentBagValue()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs rounded-lg border border-rose-800 shadow active:scale-95 transition flex flex-col items-center justify-center gap-1">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                            <span>XÓA BAO</span>
+                        </button>
 
-            <!-- Keypad Layout Grid -->
-            <div class="grid grid-cols-12 gap-1.5 mt-0.5">
-                
-                <!-- Numpad 4x3 (Left side) -->
-                <div class="col-span-7 grid grid-cols-3 gap-1">
-                    <button onclick="pressNum('7')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">7</button>
-                    <button onclick="pressNum('8')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">8</button>
-                    <button onclick="pressNum('9')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">9</button>
-                    
-                    <button onclick="pressNum('4')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">4</button>
-                    <button onclick="pressNum('5')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">5</button>
-                    <button onclick="pressNum('6')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">6</button>
-                    
-                    <button onclick="pressNum('1')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">1</button>
-                    <button onclick="pressNum('2')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">2</button>
-                    <button onclick="pressNum('3')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">3</button>
-                    
-                    <button onclick="pressNum('0')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">0</button>
-                    <button onclick="pressNum('.')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 text-lg rounded-lg border border-slate-300 active:bg-slate-300 transition shadow-sm">.</button>
-                    <button onclick="deleteDigit()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2 text-base rounded-lg border border-rose-300 active:bg-rose-300 transition shadow-sm">
-                        <i class="fa-solid fa-backspace"></i>
-                    </button>
+                        <!-- COMPLETE & CALCULATE RECEIPT -->
+                        <button onclick="openBillModal()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs rounded-lg border border-amber-800 shadow active:scale-95 transition flex flex-col items-center justify-center gap-1">
+                            <i class="fa-solid fa-file-invoice-dollar text-base"></i>
+                            <span>TÍNH TIỀN</span>
+                        </button>
+                    </div>
+
                 </div>
-
-                <!-- Action Buttons (Right side) -->
-                <div class="col-span-5 flex flex-col gap-1">
-                    <!-- ENTER BUTTON -->
-                    <button onclick="submitValue()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black text-lg rounded-lg border border-blue-800 shadow-md active:scale-95 transition flex items-center justify-center gap-1">
-                        <span>NHẬP</span>
-                        <i class="fa-solid fa-turn-down rotate-90 text-sm"></i>
-                    </button>
-                    
-                    <!-- DELETE BAG VALUE BUTTON -->
-                    <button onclick="deleteCurrentBagValue()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-1.5 text-xs rounded-lg border border-rose-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-trash-can"></i>
-                        <span>XÓA BAO</span>
-                    </button>
-
-                    <!-- COMPLETE & CALCULATE RECEIPT -->
-                    <button onclick="openBillModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 text-xs rounded-lg border border-amber-800 shadow active:scale-95 transition flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                        <span>TÍNH TIỀN</span>
-                    </button>
-                </div>
-
-            </div>
-        </section>
+            </section>
+        </div>
 
         <!-- Copyright & Hotline Footer -->
-        <footer class="text-center py-0.5 flex-none border-t border-slate-200 bg-white/80 rounded-t-lg">
-            <p class="text-[10px] font-bold text-slate-700 tracking-tight">
+        <footer class="text-center py-1 flex-none border-t border-slate-200 bg-white/80 rounded-t-lg">
+            <p class="text-[11px] font-bold text-slate-700 tracking-tight">
                 Phát triển bởi <span class="text-amber-700 font-black">KHOA HOA KỲ</span>
             </p>
-            <p class="text-[9px] font-extrabold text-amber-600 flex items-center justify-center gap-1">
-                <i class="fa-solid fa-phone text-[8px]"></i> Hotline: <a href="tel:0845325488" class="underline tracking-wide">0845 325 488</a>
+            <p class="text-[10px] font-extrabold text-amber-600 flex items-center justify-center gap-1 mt-0.5">
+                <i class="fa-solid fa-phone text-[9px]"></i> Hotline: <a href="tel:0845325488" class="underline tracking-wide">0845 325 488</a>
             </p>
         </footer>
     </main>
 
-    <!-- Modals / Dialogs -->
+    <!-- MODALS & DIALOGS -->
 
-    <!-- Settings Modal -->
+    <!-- Modal 1: Create New Farmer Dialog -->
+    <div id="newFarmerModal" class="fixed inset-0 bg-slate-900/60 z-[55] hidden flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl flex flex-col gap-3 animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-amber-600"></i> BẮT ĐẦU CÂN CHO NÔNG DÂN MỚI
+                </h3>
+                <button onclick="closeNewFarmerModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-2.5 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Tên Nông Dân / Chủ Ruộng (*):</label>
+                    <input type="text" id="newFarmerNameInput" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800 focus:border-amber-500 focus:outline-none" placeholder="VD: Anh Ba Cường">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Số Điện Thoại:</label>
+                    <input type="tel" id="newFarmerPhoneInput" class="w-full p-2 border border-slate-300 rounded-lg font-semibold text-slate-800 focus:border-amber-500 focus:outline-none" placeholder="VD: 0912345678">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Địa Chỉ / Vị Trí Ruộng:</label>
+                    <input type="text" id="newFarmerAddressInput" class="w-full p-2 border border-slate-300 rounded-lg font-semibold text-slate-800 focus:border-amber-500 focus:outline-none" placeholder="VD: Kháng Chiến, Châu Thành">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Giống Lúa:</label>
+                        <input type="text" id="newFarmerRiceTypeInput" value="ST25" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-amber-700 focus:border-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Giá Mua (đ/kg):</label>
+                        <input type="number" id="newFarmerPriceInput" value="8500" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-emerald-700 focus:border-amber-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2 border-t border-slate-100">
+                <button onclick="closeNewFarmerModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-lg text-xs transition">
+                    Hủy Bỏ
+                </button>
+                <button onclick="confirmCreateNewFarmer()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded-lg text-xs shadow-md transition flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Tạo & Bắt Đầu Cân</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Settings Modal -->
     <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-xl flex flex-col gap-3">
             <div class="flex justify-between items-center border-b pb-2">
@@ -296,7 +398,7 @@
                         <span>Chế độ gõ nhanh (Số lẻ)</span>
                         <input type="checkbox" id="settingAutoDecimal" checked class="w-4 h-4 text-amber-600 rounded">
                     </label>
-                    <p class="text-[10px] text-slate-500 mt-1">Gõ 3 số liên tiếp ví dụ <b>502</b> sẽ tự hiểu là <b>50.2 kg</b> mà không cần gõ dấu chấm.</p>
+                    <p class="text-[10px] text-slate-500 mt-1">Gõ 3 số liên tiếp ví dụ <b>654</b> sẽ tự hiểu là <b>65.4 kg</b> và tự động nhảy bao tiếp theo.</p>
                 </div>
                 
                 <div class="bg-blue-50 p-2.5 rounded-lg border border-blue-200">
@@ -318,7 +420,7 @@
         </div>
     </div>
 
-    <!-- Bill / Receipt Modal -->
+    <!-- Modal 3: Bill / Receipt Modal -->
     <div id="billModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-3">
         <div class="bg-white rounded-2xl max-w-md w-full p-4 shadow-xl flex flex-col max-h-[90vh] overflow-hidden">
             <div class="flex justify-between items-center border-b pb-2 flex-none">
@@ -339,8 +441,20 @@
 
                 <div class="space-y-1 border-b border-dashed border-slate-300 pb-2">
                     <div class="flex justify-between">
+                        <span class="text-slate-500">Chủ ghe / Xe:</span>
+                        <span class="font-bold text-amber-800" id="billBoat">--</span>
+                    </div>
+                    <div class="flex justify-between">
                         <span class="text-slate-500">Chủ ruộng:</span>
                         <span class="font-bold text-slate-800" id="billFarmer">--</span>
+                    </div>
+                    <div class="flex justify-between" id="billPhoneRow">
+                        <span class="text-slate-500">Số điện thoại:</span>
+                        <span class="font-semibold text-slate-700" id="billFarmerPhone">--</span>
+                    </div>
+                    <div class="flex justify-between" id="billAddressRow">
+                        <span class="text-slate-500">Địa chỉ ruộng:</span>
+                        <span class="font-semibold text-slate-700" id="billFarmerAddress">--</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-slate-500">Loại lúa:</span>
@@ -407,7 +521,7 @@
         </div>
     </div>
 
-    <!-- History Modal -->
+    <!-- Modal 4: History Modal -->
     <div id="historyModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-3">
         <div class="bg-white rounded-2xl max-w-md w-full p-4 shadow-xl flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center border-b pb-2 flex-none">
@@ -430,7 +544,7 @@
         </div>
     </div>
 
-    <!-- History Detail Items Modal (Show individual bags on farmer click) -->
+    <!-- Modal 5: History Detail Items Modal -->
     <div id="historyDetailModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-3">
         <div class="bg-white rounded-2xl max-w-md w-full p-4 shadow-xl flex flex-col max-h-[85vh] overflow-hidden">
             <div class="flex justify-between items-center border-b pb-2 flex-none">
@@ -445,7 +559,6 @@
                 </button>
             </div>
 
-            <!-- Detailed Grid Container -->
             <div class="flex-1 overflow-y-auto my-2 custom-scroll p-1">
                 <div id="historyDetailContainer" class="grid grid-cols-5 gap-1.5">
                     <!-- Dynamic rendering of bags per code column -->
@@ -460,7 +573,7 @@
         </div>
     </div>
 
-    <!-- Custom Confirm Dialog Modal -->
+    <!-- Modal 6: Custom Confirm Dialog Modal -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-xs w-full p-4 shadow-2xl flex flex-col gap-3 text-center animate-in fade-in zoom-in duration-200">
             <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl">
@@ -487,33 +600,28 @@
 
     <!-- Javascript Application Logic -->
     <script>
-        // Data Constants
+        // Data Constants (Expanded to 100 tables = 2500 bags max)
         const ROWS_PER_COL = 5;
         const TOTAL_COLS_PER_TABLE = 5;
         const CELLS_PER_TABLE = ROWS_PER_COL * TOTAL_COLS_PER_TABLE; // 25 bags per table
-        const MAX_TABLE_PAGES = 10; // Total 10 tables supported (250 bags max per batch)
+        const MAX_TABLE_PAGES = 100; // Total 100 tables supported
         const TOTAL_MAX_CELLS = CELLS_PER_TABLE * MAX_TABLE_PAGES; 
 
-        // Style theme for code columns
-        const COL_THEMES = [
-            { bg: 'bg-amber-50/90', border: 'border-amber-200', text: 'text-amber-900', badge: 'bg-amber-500' },
-            { bg: 'bg-emerald-50/90', border: 'border-emerald-200', text: 'text-emerald-900', badge: 'bg-emerald-600' },
-            { bg: 'bg-sky-50/90', border: 'border-sky-200', text: 'text-sky-900', badge: 'bg-sky-600' },
-            { bg: 'bg-indigo-50/90', border: 'border-indigo-200', text: 'text-indigo-900', badge: 'bg-indigo-600' },
-            { bg: 'bg-rose-50/90', border: 'border-rose-200', text: 'text-rose-900', badge: 'bg-rose-600' }
-        ];
-
-        // Master array storing up to 250 bag entries across 10 table pages
+        // Master array storing up to 2500 bag entries across 100 table pages
         let gridData = new Array(TOTAL_MAX_CELLS).fill(null);
-        let currentIndex = 0; // Current active cell index globally (0 to 249)
-        let currentTablePage = 0; // Page 0 to 9 (corresponds to Table 1 to 10)
+        let currentIndex = 0; // Current active cell index globally (0 to 2499)
+        let currentTablePage = 0; // Page 0 to 99 (corresponds to Table 1 to 100)
+        let editingBatchId = null; // Tracks whether currently editing an existing record
 
         let config = {
             tarePerBag: 0.125, // kg
             deductRatio: 0.0, // %
             autoDecimal: true,
             voiceEnabled: true,
+            boatName: "Ghe Chị Tám (Đồng Tháp)",
             farmer: "Anh Ba Cường",
+            farmerPhone: "",
+            farmerAddress: "",
             riceType: "ST25",
             price: 8500
         };
@@ -522,12 +630,172 @@
         let audioEnabled = true;
         let pendingConfirmCallback = null;
 
+        // View Navigation Switcher
+        function switchView(viewName) {
+            const homeView = document.getElementById('homeView');
+            const scaleView = document.getElementById('scaleView');
+
+            if (viewName === 'home') {
+                homeView.classList.remove('hidden');
+                scaleView.classList.add('hidden');
+                renderHomeDashboard();
+            } else {
+                homeView.classList.add('hidden');
+                scaleView.classList.remove('hidden');
+            }
+        }
+
+        // Toggle Payment Status directly on batch card
+        function togglePaymentStatus(batchId, event) {
+            if (event) event.stopPropagation(); // Prevents opening edit mode
+            const history = JSON.parse(localStorage.getItem('rice_app_history') || '[]');
+            const index = history.findIndex(item => item.id === batchId);
+
+            if (index !== -1) {
+                history[index].isPaid = !history[index].isPaid;
+                localStorage.setItem('rice_app_history', JSON.stringify(history));
+                
+                const statusMsg = history[index].isPaid ? "Đã trả tiền" : "Chưa trả tiền";
+                showToast(`Đã đổi trạng thái "${history[index].farmer}": ${statusMsg}`);
+                
+                renderHomeDashboard();
+                if (!document.getElementById('historyModal').classList.contains('hidden')) {
+                    openHistoryModal();
+                }
+            }
+        }
+
+        // Load existing batch for editing or adding more bags
+        function loadBatchForEditing(batchId) {
+            const history = JSON.parse(localStorage.getItem('rice_app_history') || '[]');
+            const record = history.find(item => item.id === batchId);
+
+            if (!record) {
+                showToast("⚠️ Không tìm thấy đợt cân!");
+                return;
+            }
+
+            editingBatchId = record.id;
+            gridData = new Array(TOTAL_MAX_CELLS).fill(null);
+
+            if (record.gridData && Array.isArray(record.gridData)) {
+                for (let i = 0; i < record.gridData.length && i < TOTAL_MAX_CELLS; i++) {
+                    gridData[i] = record.gridData[i];
+                }
+            }
+
+            // Restore farmer settings
+            config.farmer = record.farmer || "Nông Dân Mới";
+            config.farmerPhone = record.farmerPhone || "";
+            config.farmerAddress = record.farmerAddress || "";
+            config.riceType = record.riceType || "ST25";
+            config.price = record.price || 8500;
+            if (record.tareRate) config.tarePerBag = record.tareRate;
+
+            document.getElementById('farmerName').value = config.farmer;
+            document.getElementById('riceType').value = config.riceType;
+            document.getElementById('ricePrice').value = config.price;
+            document.getElementById('settingTare').value = config.tarePerBag;
+
+            // Update Editing UI Indicator
+            const badge = document.getElementById('editingBadge');
+            if (badge) {
+                badge.classList.remove('hidden');
+                document.getElementById('editingFarmerTitle').innerText = config.farmer;
+            }
+
+            currentTablePage = 0;
+            document.getElementById('currentTablePageLabel').innerText = "1";
+            buildGridUI();
+
+            // Find first empty cell to continue entry
+            let firstEmptyIdx = 0;
+            for (let i = 0; i < TOTAL_MAX_CELLS; i++) {
+                if (gridData[i] === null) {
+                    firstEmptyIdx = i;
+                    break;
+                }
+            }
+            selectCell(firstEmptyIdx);
+            updateSummary();
+
+            closeHistoryModal();
+            closeHistoryDetailModal();
+            switchView('scale');
+            showToast(`Đã mở đợt cân của "${config.farmer}". Có thể nhập tiếp hoặc sửa!`);
+        }
+
+        function cancelEditingBatch() {
+            editingBatchId = null;
+            const badge = document.getElementById('editingBadge');
+            if (badge) badge.classList.add('hidden');
+            clearGridForNextFarmer(true);
+            showToast("Đã thoát chế độ chỉnh sửa đợt cân!");
+        }
+
+        // Open & Close Create New Farmer Modal
+        function openNewFarmerModal() {
+            editingBatchId = null;
+            const badge = document.getElementById('editingBadge');
+            if (badge) badge.classList.add('hidden');
+
+            document.getElementById('newFarmerNameInput').value = "";
+            document.getElementById('newFarmerPhoneInput').value = "";
+            document.getElementById('newFarmerAddressInput').value = "";
+            document.getElementById('newFarmerRiceTypeInput').value = config.riceType || "ST25";
+            document.getElementById('newFarmerPriceInput').value = config.price || "8500";
+            
+            document.getElementById('newFarmerModal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('newFarmerNameInput').focus();
+            }, 200);
+        }
+
+        function closeNewFarmerModal() {
+            document.getElementById('newFarmerModal').classList.add('hidden');
+        }
+
+        function confirmCreateNewFarmer() {
+            const name = document.getElementById('newFarmerNameInput').value.trim();
+            if (!name) {
+                showToast("⚠️ Vui lòng nhập tên nông dân / chủ ruộng!");
+                return;
+            }
+
+            const phone = document.getElementById('newFarmerPhoneInput').value.trim();
+            const address = document.getElementById('newFarmerAddressInput').value.trim();
+            const riceType = document.getElementById('newFarmerRiceTypeInput').value.trim() || "ST25";
+            const price = parseFloat(document.getElementById('newFarmerPriceInput').value) || 8500;
+
+            // Apply new farmer state
+            config.farmer = name;
+            config.farmerPhone = phone;
+            config.farmerAddress = address;
+            config.riceType = riceType;
+            config.price = price;
+
+            document.getElementById('farmerName').value = name;
+            document.getElementById('riceType').value = riceType;
+            document.getElementById('ricePrice').value = price;
+
+            localStorage.setItem('rice_app_config', JSON.stringify(config));
+
+            // Clear scale grid for new farmer
+            clearGridForNextFarmer(false);
+
+            closeNewFarmerModal();
+            switchView('scale');
+            showToast(`Đã tạo nông dân "${name}". Bắt đầu cân lúa!`);
+        }
+
+        // Utility helper to format numbers cleanly
         function formatNumberClean(val) {
             if (val === null || val === undefined || isNaN(val)) return "0";
             const num = typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
             return num.toString();
         }
 
+        // Custom Confirm Dialog Utilities
         function showConfirmModal(title, message, onConfirm, btnText = "Đồng Ý Xóa", btnClass = "bg-rose-600 hover:bg-rose-700") {
             document.getElementById('confirmTitle').innerText = title;
             document.getElementById('confirmMessage').innerText = message;
@@ -558,6 +826,7 @@
             buildGridUI();
             selectCell(0);
             updateSummary();
+            renderHomeDashboard();
         };
 
         function loadConfig() {
@@ -572,6 +841,9 @@
             document.getElementById('settingDeduct').value = config.deductRatio;
             document.getElementById('settingAutoDecimal').checked = config.autoDecimal;
             document.getElementById('settingVoice').checked = config.voiceEnabled;
+            
+            const boatInput = document.getElementById('boatName');
+            if (boatInput) boatInput.value = config.boatName || "Ghe Chị Tám (Đồng Tháp)";
 
             updateConfigDisplays();
         }
@@ -579,9 +851,78 @@
         function updateConfigDisplays() {
             document.getElementById('tareDisplay').innerText = `${formatNumberClean(config.tarePerBag)} kg`;
             document.getElementById('deductDisplay').innerText = `${parseFloat(config.deductRatio).toFixed(1)} %`;
-            document.getElementById('autoDecimalDisplay').innerText = config.autoDecimal ? "502 ➔ 50.2" : "Gõ chính xác";
+            document.getElementById('autoDecimalDisplay').innerText = config.autoDecimal ? "654 ➔ 65.4" : "Gõ chính xác";
         }
 
+        function updateBoatInfo() {
+            config.boatName = document.getElementById('boatName').value;
+            localStorage.setItem('rice_app_config', JSON.stringify(config));
+            showToast("Đã cập nhật tên Chủ Ghe / Xe!");
+        }
+
+        // Render Home Dashboard Summary
+        function renderHomeDashboard() {
+            const history = JSON.parse(localStorage.getItem('rice_app_history') || '[]');
+            let totalNetWeight = 0;
+            let totalAmount = 0;
+
+            const homeList = document.getElementById('homeRecentList');
+            if (homeList) homeList.innerHTML = '';
+
+            if (history.length === 0) {
+                if (homeList) homeList.innerHTML = `<p class="text-center text-slate-400 py-6 text-xs">Chưa có chuyến lúa nào trên ghe.</p>`;
+            } else {
+                history.forEach((item, index) => {
+                    const net = item.netWeight !== undefined ? item.netWeight : Math.max(0, item.grossWeight - (item.totalBags * (item.tareRate || 0.125)));
+                    const amt = item.totalAmount !== undefined ? item.totalAmount : Math.round(net * item.price);
+
+                    totalNetWeight += net;
+                    totalAmount += amt;
+
+                    if (homeList && index < 10) { // Show top 10 on dashboard
+                        const card = document.createElement('div');
+                        const isPaid = item.isPaid || false;
+                        
+                        const bgClass = isPaid ? "bg-emerald-50/90 border-emerald-300" : "bg-slate-50 border-slate-200 hover:border-amber-400";
+                        const paidBtnClass = isPaid ? "bg-emerald-600 text-white shadow-sm" : "bg-slate-200 text-slate-600 hover:bg-emerald-100 hover:text-emerald-800";
+                        const paidText = isPaid ? "✓ Đã Trả Tiền" : "⊙ Chưa Trả";
+
+                        card.className = `${bgClass} border p-2.5 rounded-xl text-xs flex justify-between items-center shadow-sm transition cursor-pointer active:scale-98 relative`;
+                        card.onclick = () => loadBatchForEditing(item.id);
+
+                        const phoneText = item.farmerPhone ? ` • 📞 ${item.farmerPhone}` : '';
+
+                        card.innerHTML = `
+                            <div>
+                                <span class="font-extrabold text-blue-800 text-sm flex items-center gap-1">
+                                    <span>#${index+1}. ${item.farmer}</span>
+                                    <i class="fa-solid fa-pen text-[10px] text-amber-600 ml-0.5"></i>
+                                </span>
+                                <span class="text-[10px] text-slate-500 block font-medium mt-0.5">
+                                    ${item.riceType} • <b>${item.totalBags} bao</b>${phoneText}
+                                </span>
+                                ${item.farmerAddress ? `<span class="text-[9px] text-slate-400 block">${item.farmerAddress}</span>` : ''}
+                            </div>
+                            <div class="text-right flex flex-col items-end gap-1">
+                                <div>
+                                    <span class="font-black text-emerald-700 text-sm block leading-tight">${net.toFixed(1)} kg</span>
+                                    <span class="text-xs text-amber-700 font-extrabold block leading-tight">${amt.toLocaleString('vi-VN')} đ</span>
+                                </div>
+                                <button onclick="togglePaymentStatus(${item.id}, event)" class="${paidBtnClass} text-[10px] font-extrabold px-2 py-0.5 rounded-md transition active:scale-95">
+                                    ${paidText}
+                                </button>
+                            </div>
+                        `;
+                        homeList.appendChild(card);
+                    }
+                });
+            }
+
+            document.getElementById('homeTotalNetWeight').innerText = `${totalNetWeight.toFixed(1)} kg`;
+            document.getElementById('homeTotalAmount').innerText = `${totalAmount.toLocaleString('vi-VN')} đ`;
+        }
+
+        // Table Page Switcher Handler
         function changeTablePage(delta) {
             const newPage = currentTablePage + delta;
             if (newPage < 0 || newPage >= MAX_TABLE_PAGES) return;
@@ -590,32 +931,33 @@
             document.getElementById('currentTablePageLabel').innerText = currentTablePage + 1;
             
             buildGridUI();
+            
+            // Set active index to top of new table page
             const pageStartIndex = currentTablePage * CELLS_PER_TABLE;
             selectCell(pageStartIndex);
         }
 
+        // Build Grid HTML for current Table Page (5 columns x 5 rows - Enlarged for Seniors)
         function buildGridUI() {
             const container = document.getElementById('gridContainer');
             container.innerHTML = '';
 
             const pageBaseIndex = currentTablePage * CELLS_PER_TABLE;
-            const codeBaseNumber = currentTablePage * TOTAL_COLS_PER_TABLE;
+            const codeBaseNumber = currentTablePage * TOTAL_COLS_PER_TABLE; // Mã 1..5, Mã 6..10, etc.
 
             for (let c = 0; c < TOTAL_COLS_PER_TABLE; c++) {
-                const theme = COL_THEMES[c % COL_THEMES.length];
-                
                 const colDiv = document.createElement('div');
-                colDiv.className = `flex flex-col h-full justify-between bg-slate-50 p-1 rounded-lg border ${theme.border}`;
+                colDiv.className = "flex flex-col h-full justify-between bg-slate-50/90 p-0.5 rounded-lg border border-slate-200";
                 
-                // Col Header
+                // Col Header - Large Font for Code Title
                 const header = document.createElement('div');
-                header.className = `text-center font-black text-xs text-white pb-0.5 mb-1 ${theme.badge} rounded py-0.5 shadow-sm tracking-tight`;
+                header.className = "text-center font-black text-sm sm:text-base text-slate-900 border-b border-slate-200 pb-0.5 mb-0.5 bg-amber-100/80 rounded py-0.5 shadow-sm";
                 header.innerText = `MÃ ${codeBaseNumber + c + 1}`;
                 colDiv.appendChild(header);
 
                 // Col Cells container
                 const cellsDiv = document.createElement('div');
-                cellsDiv.className = "flex-1 flex flex-col justify-between gap-1";
+                cellsDiv.className = "flex-1 flex flex-col justify-between gap-0.5";
 
                 for (let r = 0; r < ROWS_PER_COL; r++) {
                     const localIndex = c * ROWS_PER_COL + r;
@@ -625,11 +967,12 @@
                     const cellBtn = document.createElement('button');
                     cellBtn.id = `cell-${globalIndex}`;
                     cellBtn.onclick = () => selectCell(globalIndex);
-                    cellBtn.className = "cell-item bg-white border border-slate-200 rounded py-0.5 px-0.5 flex flex-col items-center justify-center transition relative h-full min-h-[36px]";
+                    cellBtn.className = "cell-item bg-white border border-slate-200 rounded py-0.5 px-0.5 flex flex-col items-center justify-center transition relative h-full min-h-[40px]";
                     
+                    // Extra Enlarged Weight Value & Label Font Size for Seniors
                     cellBtn.innerHTML = `
-                        <span class="text-[8px] text-slate-400 font-bold leading-none">Bao ${baoNumber}</span>
-                        <span class="text-sm sm:text-base font-black text-slate-800 leading-tight val-text">--.--</span>
+                        <span class="text-[9px] text-slate-400 font-extrabold leading-none">Bao ${baoNumber}</span>
+                        <span class="text-base sm:text-lg font-black text-slate-800 leading-tight val-text">--.--</span>
                     `;
                     cellsDiv.appendChild(cellBtn);
                 }
@@ -638,25 +981,28 @@
 
                 // Col Total Footer
                 const footer = document.createElement('div');
-                footer.className = `mt-1 pt-1 border-t ${theme.border} text-center ${theme.bg} rounded py-0.5`;
+                footer.className = "mt-0.5 pt-0.5 border-t border-slate-200 text-center bg-amber-100 rounded py-0.5";
                 footer.innerHTML = `
-                    <span class="text-[8px] text-slate-500 font-bold block leading-none">T.MÃ ${codeBaseNumber + c + 1}</span>
-                    <span id="col-total-${c}" class="font-black text-xs ${theme.text} leading-tight">0.0</span>
+                    <span class="text-[8px] text-slate-500 font-extrabold block leading-none">T.MÃ</span>
+                    <span id="col-total-${c}" class="font-black text-xs sm:text-sm text-amber-900 leading-tight">0.0</span>
                 `;
                 colDiv.appendChild(footer);
 
                 container.appendChild(colDiv);
             }
 
+            // Populate cells with existing data
             for (let i = 0; i < CELLS_PER_TABLE; i++) {
                 updateCellUI(pageBaseIndex + i);
             }
             updateSummary();
         }
 
+        // Highlight Active Cell
         function selectCell(index) {
             if (index < 0 || index >= TOTAL_MAX_CELLS) return;
 
+            // Automatically switch table page if target index is on another page
             const targetPage = Math.floor(index / CELLS_PER_TABLE);
             if (targetPage !== currentTablePage) {
                 currentTablePage = targetPage;
@@ -664,9 +1010,10 @@
                 buildGridUI();
             }
 
+            // Remove active style from previous cell
             const prevCell = document.getElementById(`cell-${currentIndex}`);
             if (prevCell) {
-                prevCell.classList.remove('active-cell', 'bg-blue-50');
+                prevCell.classList.remove('active-cell', 'bg-blue-50', 'border-blue-500');
             }
 
             currentIndex = index;
@@ -675,19 +1022,14 @@
 
             const newCell = document.getElementById(`cell-${currentIndex}`);
             if (newCell) {
-                newCell.classList.add('active-cell', 'bg-blue-50');
+                newCell.classList.add('active-cell');
             }
 
+            // Update bag indicator
             document.getElementById('currentBaoLabel').innerText = `#${currentIndex + 1}`;
         }
 
-        function navigateCell(delta) {
-            const nextIdx = currentIndex + delta;
-            if (nextIdx >= 0 && nextIdx < TOTAL_MAX_CELLS) {
-                selectCell(nextIdx);
-            }
-        }
-
+        // Numpad Pressed & Auto Submit Logic
         function pressNum(digit) {
             if (digit === '.' && currentInputStr.includes('.')) return;
             
@@ -698,11 +1040,10 @@
             }
 
             updateKeypadDisplay();
-        }
 
-        function setBaseKg(kgStr) {
-            currentInputStr = kgStr;
-            updateKeypadDisplay();
+            if (config.autoDecimal && !currentInputStr.includes('.') && currentInputStr.length === 3) {
+                autoSubmitInputValue();
+            }
         }
 
         function deleteDigit() {
@@ -725,36 +1066,9 @@
             display.innerText = formattedVal;
         }
 
-        function quickAddFraction(fracStr) {
-            let baseVal = 50.0;
-            if (gridData[currentIndex] !== null) {
-                baseVal = Math.floor(gridData[currentIndex]);
-            } else if (currentInputStr) {
-                baseVal = Math.floor(parseFloat(getParsedInputValue()));
-            }
-
-            const val = (baseVal + parseFloat(fracStr)).toFixed(1);
-            currentInputStr = val.toString();
-            updateKeypadDisplay();
-            submitValue();
-        }
-
-        function getParsedInputValue() {
-            if (!currentInputStr) return null;
-            if (config.autoDecimal && !currentInputStr.includes('.') && currentInputStr.length >= 3) {
-                return (parseFloat(currentInputStr) / 10).toFixed(1);
-            }
-            return parseFloat(currentInputStr).toFixed(1);
-        }
-
-        function submitValue() {
+        function autoSubmitInputValue() {
             let val = getParsedInputValue();
-            if (val === null) {
-                if (gridData[currentIndex] !== null) {
-                    moveToNextCell();
-                }
-                return;
-            }
+            if (val === null) return;
 
             val = parseFloat(val);
 
@@ -771,6 +1085,28 @@
             }
 
             moveToNextCell();
+        }
+
+        function quickAddFraction(fracStr) {
+            let baseVal = 50.0;
+            if (gridData[currentIndex] !== null) {
+                baseVal = Math.floor(gridData[currentIndex]);
+            } else if (currentInputStr) {
+                baseVal = Math.floor(parseFloat(getParsedInputValue()));
+            }
+
+            const val = (baseVal + parseFloat(fracStr)).toFixed(1);
+            currentInputStr = val.toString();
+            updateKeypadDisplay();
+            autoSubmitInputValue();
+        }
+
+        function getParsedInputValue() {
+            if (!currentInputStr) return null;
+            if (config.autoDecimal && !currentInputStr.includes('.') && currentInputStr.length >= 3) {
+                return (parseFloat(currentInputStr) / 10).toFixed(1);
+            }
+            return parseFloat(currentInputStr).toFixed(1);
         }
 
         function updateCellUI(index) {
@@ -801,7 +1137,7 @@
             if (currentIndex < TOTAL_MAX_CELLS - 1) {
                 selectCell(currentIndex + 1);
             } else {
-                showToast("🎉 Đã nhập tối đa 250 bao (10 Bảng)!");
+                showToast("🎉 Đã nhập tối đa 2500 bao (100 Bảng)!");
             }
         }
 
@@ -833,7 +1169,7 @@
                 for (let r = 0; r < ROWS_PER_COL; r++) {
                     const idx = pageBaseIndex + c * ROWS_PER_COL + r;
                     if (gridData[idx] !== null) {
-                        colSum += gridData[idx];
+                        colSum += idx < TOTAL_MAX_CELLS ? gridData[idx] : 0;
                     }
                 }
                 const totalElem = document.getElementById(`col-total-${c}`);
@@ -852,14 +1188,24 @@
             document.getElementById('grossWeight').innerText = grossWeight.toFixed(1);
         }
 
-        function clearGridForNextFarmer() {
+        function clearGridForNextFarmer(resetFarmerName = true) {
+            editingBatchId = null;
+            const badge = document.getElementById('editingBadge');
+            if (badge) badge.classList.add('hidden');
+
             gridData = new Array(TOTAL_MAX_CELLS).fill(null);
             currentTablePage = 0;
             document.getElementById('currentTablePageLabel').innerText = "1";
             buildGridUI();
             selectCell(0);
             updateSummary();
-            document.getElementById('farmerName').value = "Nông Dân Mới";
+
+            if (resetFarmerName) {
+                document.getElementById('farmerName').value = "Nông Dân Mới";
+                config.farmer = "Nông Dân Mới";
+                config.farmerPhone = "";
+                config.farmerAddress = "";
+            }
         }
 
         function resetCurrentGridManual() {
@@ -867,7 +1213,7 @@
                 "Xóa Bảng Cân Hiện Tại",
                 "Bạn có chắc chắn muốn xóa tất cả dữ liệu cân hiện tại trên bảng?",
                 () => {
-                    clearGridForNextFarmer();
+                    clearGridForNextFarmer(true);
                     closeSettingsModal();
                     showToast("Đã xóa làm lại!");
                 }
@@ -893,7 +1239,25 @@
             const totalAmount = netWeight * price;
 
             document.getElementById('billDate').innerText = `Ngày: ${new Date().toLocaleDateString('vi-VN')} ${new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}`;
+            document.getElementById('billBoat').innerText = config.boatName || "Chưa nhập";
             document.getElementById('billFarmer').innerText = document.getElementById('farmerName').value;
+            
+            const phoneRow = document.getElementById('billPhoneRow');
+            if (config.farmerPhone) {
+                phoneRow.classList.remove('hidden');
+                document.getElementById('billFarmerPhone').innerText = config.farmerPhone;
+            } else {
+                phoneRow.classList.add('hidden');
+            }
+
+            const addrRow = document.getElementById('billAddressRow');
+            if (config.farmerAddress) {
+                addrRow.classList.remove('hidden');
+                document.getElementById('billFarmerAddress').innerText = config.farmerAddress;
+            } else {
+                addrRow.classList.add('hidden');
+            }
+
             document.getElementById('billRiceType').innerText = document.getElementById('riceType').value;
             document.getElementById('billUnitPrice').innerText = `${price.toLocaleString('vi-VN')} đ/kg`;
 
@@ -910,6 +1274,7 @@
             document.getElementById('billTotalAmount').innerText = `${Math.round(totalAmount).toLocaleString('vi-VN')} đ`;
 
             calculateFinalMoney();
+
             document.getElementById('billModal').classList.remove('hidden');
         }
 
@@ -949,10 +1314,21 @@
             const totalAmount = Math.round(netWeight * price);
             const remainingAmount = totalAmount - deposit;
 
+            let history = JSON.parse(localStorage.getItem('rice_app_history') || '[]');
+            let prevPaidState = false;
+
+            if (editingBatchId) {
+                const existing = history.find(item => item.id === editingBatchId);
+                if (existing) prevPaidState = existing.isPaid || false;
+            }
+
             const batchRecord = {
-                id: Date.now(),
+                id: editingBatchId ? editingBatchId : Date.now(),
                 date: new Date().toLocaleDateString('vi-VN') + " " + new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}),
+                boatName: config.boatName || "Chưa nhập",
                 farmer,
+                farmerPhone: config.farmerPhone || "",
+                farmerAddress: config.farmerAddress || "",
                 riceType,
                 price,
                 totalBags,
@@ -963,17 +1339,30 @@
                 deposit,
                 totalAmount,
                 remainingAmount,
+                isPaid: prevPaidState,
                 gridData: [...gridData]
             };
 
-            const history = JSON.parse(localStorage.getItem('rice_app_history') || '[]');
-            history.unshift(batchRecord);
+            if (editingBatchId) {
+                const existingIdx = history.findIndex(item => item.id === editingBatchId);
+                if (existingIdx !== -1) {
+                    history[existingIdx] = batchRecord;
+                } else {
+                    history.unshift(batchRecord);
+                }
+            } else {
+                history.unshift(batchRecord);
+            }
+
             localStorage.setItem('rice_app_history', JSON.stringify(history));
 
             document.getElementById('billDeposit').value = "0";
-            clearGridForNextFarmer();
+            clearGridForNextFarmer(true);
+
             closeBillModal();
-            showToast("💾 Đã lưu đợt cân! Bảng cân đã được dọn trống.");
+            renderHomeDashboard();
+            switchView('home');
+            showToast("💾 Đã lưu & cập nhật đợt cân thành công!");
         }
 
         function openHistoryModal() {
@@ -991,23 +1380,38 @@
                     const totalAmount = item.totalAmount !== undefined ? item.totalAmount : Math.round(netWeight * item.price);
                     const remainingAmount = item.remainingAmount !== undefined ? item.remainingAmount : totalAmount - (item.deposit || 0);
 
+                    const isPaid = item.isPaid || false;
+                    const cardBgClass = isPaid ? "bg-emerald-50/90 border-emerald-300" : "bg-slate-50 border-slate-200 hover:border-amber-400";
+                    const paidBtnClass = isPaid ? "bg-emerald-600 text-white shadow-sm" : "bg-slate-200 text-slate-600 hover:bg-emerald-100 hover:text-emerald-800";
+                    const paidText = isPaid ? "✓ Đã Trả Tiền" : "⊙ Chưa Trả";
+
                     const card = document.createElement('div');
-                    card.className = "bg-slate-50 border border-slate-200 hover:border-amber-400 p-2.5 rounded-xl text-xs space-y-2 shadow-sm transition relative group";
+                    card.className = `${cardBgClass} border p-2.5 rounded-xl text-xs space-y-2 shadow-sm transition relative group cursor-pointer`;
+                    card.onclick = () => loadBatchForEditing(item.id);
+
+                    const contactMeta = [];
+                    if (item.farmerPhone) contactMeta.push(`📞 ${item.farmerPhone}`);
+                    if (item.farmerAddress) contactMeta.push(`📍 ${item.farmerAddress}`);
+                    const contactStr = contactMeta.length > 0 ? `<span class="text-[10px] text-slate-500 font-normal block">${contactMeta.join(' • ')}</span>` : '';
 
                     card.innerHTML = `
-                        <div class="flex justify-between items-center font-bold text-slate-800 border-b border-slate-200 pb-1 pr-6">
-                            <span class="text-blue-700 font-extrabold flex items-center gap-1.5 text-sm" onclick="showHistoryDetailById(${item.id})">
-                                <span class="bg-amber-500 text-white rounded-md px-1.5 py-0.5 text-[11px] font-black shadow-sm">#${stt}</span>
-                                <i class="fa-solid fa-user-tag text-amber-500"></i> ${item.farmer}
-                            </span>
-                            <span class="text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded border border-amber-200 font-black" onclick="showHistoryDetailById(${item.id})">${item.price.toLocaleString('vi-VN')} đ/kg</span>
+                        <div class="flex justify-between items-start font-bold text-slate-800 border-b border-slate-200 pb-1 pr-6">
+                            <div>
+                                <span class="text-blue-700 font-extrabold flex items-center gap-1.5 text-sm">
+                                    <span class="bg-amber-500 text-white rounded-md px-1.5 py-0.5 text-[11px] font-black shadow-sm">#${stt}</span>
+                                    <i class="fa-solid fa-user-tag text-amber-500"></i> ${item.farmer}
+                                    <i class="fa-solid fa-pen text-[10px] text-amber-600 ml-0.5"></i>
+                                </span>
+                                ${contactStr}
+                            </div>
+                            <span class="text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded border border-amber-200 font-black">${item.price.toLocaleString('vi-VN')} đ/kg</span>
                         </div>
 
                         <button onclick="event.stopPropagation(); deleteSingleHistory(${item.id});" class="absolute top-2 right-2 text-slate-300 hover:text-rose-600 p-1 rounded transition" title="Xóa đợt cân này">
                             <i class="fa-solid fa-trash-can text-sm"></i>
                         </button>
 
-                        <div class="grid grid-cols-2 gap-1 text-[11px] bg-white p-1.5 rounded border border-slate-200" onclick="showHistoryDetailById(${item.id})">
+                        <div class="grid grid-cols-2 gap-1 text-[11px] bg-white p-1.5 rounded border border-slate-200">
                             <div>
                                 <span class="text-slate-400 block text-[9px]">SỐ BAO CÂN:</span>
                                 <b class="text-slate-800 font-black">${item.totalBags} bao</b> <span class="text-[10px] text-slate-400">(${item.grossWeight.toFixed(1)}kg gộp)</span>
@@ -1018,21 +1422,26 @@
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center bg-amber-50 p-1.5 rounded border border-amber-200 text-xs" onclick="showHistoryDetailById(${item.id})">
+                        <div class="flex justify-between items-center bg-amber-50/80 p-1.5 rounded border border-amber-200 text-xs">
                             <div>
                                 <span class="text-slate-500 block text-[9px]">TỔNG TIỀN LÚA:</span>
                                 <span class="font-extrabold text-slate-800">${totalAmount.toLocaleString('vi-VN')} đ</span>
                             </div>
-                            <div class="text-right">
-                                <span class="text-amber-700 block text-[9px] font-bold">CÒN TRẢ (CẦN TÍNH):</span>
-                                <span class="font-black text-rose-700 text-sm">${remainingAmount.toLocaleString('vi-VN')} đ</span>
+                            <div class="text-right flex items-center gap-2">
+                                <div>
+                                    <span class="text-amber-700 block text-[9px] font-bold">CÒN TRẢ:</span>
+                                    <span class="font-black text-rose-700 text-sm">${remainingAmount.toLocaleString('vi-VN')} đ</span>
+                                </div>
+                                <button onclick="togglePaymentStatus(${item.id}, event)" class="${paidBtnClass} text-[10px] font-extrabold px-2 py-0.5 rounded-md transition active:scale-95">
+                                    ${paidText}
+                                </button>
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center text-[10px] text-slate-400 pt-0.5" onclick="showHistoryDetailById(${item.id})">
-                            <span>Giống: <b>${item.riceType}</b> • ${item.date}</span>
-                            <span class="text-blue-600 font-semibold flex items-center gap-0.5">
-                                <span>Mở mã bao</span> <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                        <div class="flex justify-between items-center text-[10px] text-slate-400 pt-0.5">
+                            <span>Giống: <b>${item.riceType}</b> • Ghe: <b>${item.boatName || 'Chưa rõ'}</b></span>
+                            <span class="text-amber-700 font-bold flex items-center gap-0.5">
+                                <span>Mở nhập tiếp</span> <i class="fa-solid fa-chevron-right text-[8px]"></i>
                             </span>
                         </div>
                     `;
@@ -1041,14 +1450,6 @@
             }
 
             document.getElementById('historyModal').classList.remove('hidden');
-        }
-
-        function showHistoryDetailById(id) {
-            const history = JSON.parse(localStorage.getItem('rice_app_history') || '[]');
-            const index = history.findIndex(h => h.id === id);
-            if (index !== -1) {
-                showHistoryDetail(history[index], index + 1);
-            }
         }
 
         function deleteSingleHistory(id) {
@@ -1060,83 +1461,10 @@
                     history = history.filter(item => item.id !== id);
                     localStorage.setItem('rice_app_history', JSON.stringify(history));
                     openHistoryModal();
+                    renderHomeDashboard();
                     showToast("Đã xóa đợt cân khỏi lịch sử!");
                 }
             );
-        }
-
-        function showHistoryDetail(record, stt) {
-            const netWeight = record.netWeight !== undefined ? record.netWeight : Math.max(0, record.grossWeight - (record.totalBags * (record.tareRate || 0.125)));
-            const remainingAmount = record.remainingAmount !== undefined ? record.remainingAmount : Math.round(netWeight * record.price) - (record.deposit || 0);
-
-            const sttBadge = stt ? `[STT #${stt}] ` : '';
-            document.getElementById('historyDetailTitle').innerText = `${sttBadge}Chi Tiết Mã Cân (${record.totalBags} bao)`;
-            document.getElementById('historyDetailSubtitle').innerText = `${record.farmer} | Cân: ${record.grossWeight.toFixed(1)}kg | Thu mua: ${netWeight.toFixed(1)}kg | Cần trả: ${remainingAmount.toLocaleString('vi-VN')}đ`;
-
-            const detailContainer = document.getElementById('historyDetailContainer');
-            detailContainer.innerHTML = '';
-
-            const data = record.gridData || [];
-            
-            let maxUsedCellIndex = -1;
-            for (let i = data.length - 1; i >= 0; i--) {
-                if (data[i] !== null) {
-                    maxUsedCellIndex = i;
-                    break;
-                }
-            }
-
-            if (maxUsedCellIndex === -1) {
-                detailContainer.innerHTML = `<p class="col-span-5 text-center text-slate-400 py-4 text-xs">Không có chi tiết mã bao.</p>`;
-            } else {
-                const totalUsedCols = Math.ceil((maxUsedCellIndex + 1) / ROWS_PER_COL);
-
-                for (let c = 0; c < totalUsedCols; c++) {
-                    const theme = COL_THEMES[c % COL_THEMES.length];
-                    
-                    const colDiv = document.createElement('div');
-                    colDiv.className = `bg-slate-50 border ${theme.border} rounded-lg p-1 flex flex-col justify-between`;
-
-                    const colHeader = document.createElement('div');
-                    colHeader.className = `text-center font-black text-xs text-white pb-0.5 mb-1 ${theme.badge} rounded py-0.5 shadow-sm`;
-                    colHeader.innerText = `MÃ ${c + 1}`;
-                    colDiv.appendChild(colHeader);
-
-                    let colSum = 0;
-                    const cellsDiv = document.createElement('div');
-                    cellsDiv.className = "space-y-1";
-
-                    for (let r = 0; r < ROWS_PER_COL; r++) {
-                        const idx = c * ROWS_PER_COL + r;
-                        const val = data[idx];
-                        if (val !== null && val !== undefined) colSum += val;
-
-                        const valDisplay = (val !== null && val !== undefined) ? val.toFixed(1) : "--.--";
-
-                        const rowBox = document.createElement('div');
-                        rowBox.className = "bg-white border border-slate-200 rounded px-1 py-0.5 text-center";
-                        rowBox.innerHTML = `
-                            <span class="block text-[8px] text-slate-400 font-bold">Bao ${idx + 1}</span>
-                            <span class="text-xs font-black text-slate-800">${valDisplay}</span>
-                        `;
-                        cellsDiv.appendChild(rowBox);
-                    }
-
-                    colDiv.appendChild(cellsDiv);
-
-                    const colFooter = document.createElement('div');
-                    colFooter.className = `mt-1 pt-0.5 border-t ${theme.border} text-center ${theme.bg} rounded`;
-                    colFooter.innerHTML = `
-                        <span class="text-[8px] text-slate-500 font-bold block">T.MÃ</span>
-                        <span class="font-black text-xs ${theme.text}">${colSum.toFixed(1)}</span>
-                    `;
-                    colDiv.appendChild(colFooter);
-
-                    detailContainer.appendChild(colDiv);
-                }
-            }
-
-            document.getElementById('historyDetailModal').classList.remove('hidden');
         }
 
         function closeHistoryDetailModal() {
@@ -1154,6 +1482,7 @@
                 () => {
                     localStorage.removeItem('rice_app_history');
                     openHistoryModal();
+                    renderHomeDashboard();
                     showToast("Đã xóa toàn bộ lịch sử!");
                 }
             );
@@ -1209,7 +1538,7 @@
             const numStr = num.toFixed(1).toString().replace('.', ' phẩy ');
             const utterance = new SpeechSynthesisUtterance(numStr);
             utterance.lang = 'vi-VN';
-            utterance.rate = 1.15;
+            utterance.rate = 1.1;
             window.speechSynthesis.speak(utterance);
         }
 
@@ -1226,7 +1555,9 @@
                 gain.gain.setValueAtTime(0.2, ctx.currentTime);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.15);
-            } catch (e) {}
+            } catch (e) {
+                // Audio context policy fallback
+            }
         }
 
         function shareOrPrint() {
@@ -1244,4 +1575,4 @@
     </script>
 </body>
 </html>
- 
+
